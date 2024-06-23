@@ -13,6 +13,7 @@
 ```java
 RootNode node = QueryParser.parseQuery("hello (world or java)");
 Node.print(node);
+// RootNode
 //	TokenNode[type=KEYWORD, value=hello]
 //	RootNode
 //		TokenNode[type=KEYWORD, value=world]
