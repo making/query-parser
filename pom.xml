@@ -4,10 +4,10 @@
 		 xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 
-	<groupId>am.ik.template</groupId>
-	<artifactId>java-lib</artifactId>
+	<groupId>am.ik.query</groupId>
+	<artifactId>query-parser</artifactId>
 	<version>0.1.1-SNAPSHOT</version>
-	<name>java-lib</name>
+	<name>query-parser</name>
 	<description>A Java library template</description>
 
 	<properties>
@@ -26,12 +26,12 @@
 		</license>
 	</licenses>
 	<scm>
-		<url>https://github.com/making/java-lib</url>
-		<connection>scm:git:git@github.com:making/java-lib.git</connection>
-		<developerConnection>scm:git:git@github.com:making/java-lib.git
+		<url>https://github.com/making/query-parser</url>
+		<connection>scm:git:git@github.com:making/query-parser.git</connection>
+		<developerConnection>scm:git:git@github.com:making/query-parser.git
 		</developerConnection>
 	</scm>
-	<url>https://github.com/making/java-lib</url>
+	<url>https://github.com/making/query-parser</url>
 
 	<developers>
 		<developer>
