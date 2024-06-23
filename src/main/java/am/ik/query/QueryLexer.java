@@ -5,7 +5,7 @@ import java.util.List;
 
 public class QueryLexer {
 
-	public List<Token> tokenize(String input) {
+	public static List<Token> tokenize(String input) {
 		List<Token> tokens = new ArrayList<>();
 		int length = input.length();
 		for (int i = 0; i < length;) {

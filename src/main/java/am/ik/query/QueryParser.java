@@ -44,8 +44,7 @@ public class QueryParser {
 	}
 
 	public static RootNode parseQuery(String query) {
-		QueryLexer queryLexer = new QueryLexer();
-		List<Token> tokens = queryLexer.tokenize(query);
+		List<Token> tokens = QueryLexer.tokenize(query);
 		QueryParser queryParser = new QueryParser(tokens);
 		return queryParser.parse();
 	}
