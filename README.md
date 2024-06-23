@@ -2,11 +2,11 @@
 
 
 ```xml
-<depedency>
+<dependency>
 	<groupId>am.ik.query</groupId>
 	<artifactId>query-parser</artifactId>
 	<version>0.1.0</version>
-</depedency>
+</dependency>
 ```
 
 
