@@ -5,9 +5,9 @@
 	<modelVersion>4.0.0</modelVersion>
 
 	<groupId>am.ik.query</groupId>
-	<artifactId>query-parser</artifactId>
+	<artifactId>query-queryParser</artifactId>
 	<version>0.1.1-SNAPSHOT</version>
-	<name>query-parser</name>
+	<name>query-queryParser</name>
 	<description>A Java library template</description>
 
 	<properties>
@@ -26,12 +26,12 @@
 		</license>
 	</licenses>
 	<scm>
-		<url>https://github.com/making/query-parser</url>
-		<connection>scm:git:git@github.com:making/query-parser.git</connection>
-		<developerConnection>scm:git:git@github.com:making/query-parser.git
+		<url>https://github.com/making/query-queryParser</url>
+		<connection>scm:git:git@github.com:making/query-queryParser.git</connection>
+		<developerConnection>scm:git:git@github.com:making/query-queryParser.git
 		</developerConnection>
 	</scm>
-	<url>https://github.com/making/query-parser</url>
+	<url>https://github.com/making/query-queryParser</url>
 
 	<developers>
 		<developer>
