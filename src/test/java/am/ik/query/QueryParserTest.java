@@ -136,7 +136,6 @@ class QueryParserTest {
 	@Test
 	void deepNest() {
 		RootNode node = QueryParser.parseQuery("hello (world or (java or bean))");
-		Node.print(node);
 		assertThat(node.hasChildren()).isTrue();
 		assertThat(node.children()).hasSize(2);
 		assertThat(node.children().get(0)).isInstanceOf(TokenNode.class);
@@ -165,6 +164,16 @@ class QueryParserTest {
 		assertThat(root2.children().get(2)).isInstanceOf(TokenNode.class);
 		assertThat(((TokenNode) root2.children().get(2)).type()).isEqualTo(TokenType.KEYWORD);
 		assertThat(root2.children().get(2).value()).isEqualTo("bean");
+	}
+
+	@Test
+	void hyphen() {
+		RootNode node = QueryParser.parseQuery("hello-world");
+		assertThat(node.hasChildren()).isTrue();
+		assertThat(node.children()).hasSize(1);
+		assertThat(node.children().get(0)).isInstanceOf(TokenNode.class);
+		assertThat(((TokenNode) node.children().get(0)).type()).isEqualTo(TokenType.KEYWORD);
+		assertThat(node.children().get(0).value()).isEqualTo("hello-world");
 	}
 
 }
