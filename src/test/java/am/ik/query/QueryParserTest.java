@@ -176,4 +176,14 @@ class QueryParserTest {
 		assertThat(node.children().get(0).value()).isEqualTo("hello-world");
 	}
 
+	@Test
+	void quotedString() {
+		RootNode node = QueryParser.parseQuery("foo=\"bar\"");
+		assertThat(node.hasChildren()).isTrue();
+		assertThat(node.children()).hasSize(1);
+		assertThat(node.children().get(0)).isInstanceOf(TokenNode.class);
+		assertThat(((TokenNode) node.children().get(0)).type()).isEqualTo(TokenType.KEYWORD);
+		assertThat(node.children().get(0).value()).isEqualTo("foo=\"bar\"");
+	}
+
 }

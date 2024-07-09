@@ -29,7 +29,7 @@ public class QueryLexer {
 			}
 			else if (current == '-') {
 				if (i > 0 && !Character.isWhitespace(input.charAt(i - 1))
-						&& Character.isLetterOrDigit(input.charAt(i + 1))) {
+						&& (Character.isLetterOrDigit(input.charAt(i + 1)) || input.charAt(i + 1) == '"')) {
 					int start = i - 1;
 					while (start > 0 && !Character.isWhitespace(input.charAt(start - 1))
 							&& input.charAt(start - 1) != '(' && input.charAt(start - 1) != ')') {
@@ -61,8 +61,16 @@ public class QueryLexer {
 			else {
 				int start = i;
 				while (i < length && !Character.isWhitespace(input.charAt(i)) && input.charAt(i) != '"'
-						&& input.charAt(i) != '-' && input.charAt(i) != '(' && input.charAt(i) != ')') {
+						&& input.charAt(i) != '-' && input.charAt(i) != '(' && input.charAt(i) != ')'
+						&& input.charAt(i) != '=') {
 					i++;
+				}
+				if (i < length && input.charAt(i) == '=') {
+					i++;
+					while (i < length && !Character.isWhitespace(input.charAt(i)) && input.charAt(i) != '('
+							&& input.charAt(i) != ')') {
+						i++;
+					}
 				}
 				String value = input.substring(start, i);
 				if (value.equalsIgnoreCase("OR")) {
