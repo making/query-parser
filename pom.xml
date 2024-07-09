@@ -6,7 +6,7 @@
 
 	<groupId>am.ik.query</groupId>
 	<artifactId>query-parser</artifactId>
-	<version>0.1.1</version>
+	<version>0.1.2-SNAPSHOT</version>
 	<name>query-parser</name>
 	<description>A Java library template</description>
 
