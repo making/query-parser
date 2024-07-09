@@ -66,11 +66,11 @@ public class QueryLexer {
 					i++;
 				}
 				if (i < length && input.charAt(i) == '=') {
-					i++;
-					while (i < length && !Character.isWhitespace(input.charAt(i)) && input.charAt(i) != '('
-							&& input.charAt(i) != ')') {
+					do {
 						i++;
 					}
+					while (i < length && !Character.isWhitespace(input.charAt(i)) && input.charAt(i) != '('
+							&& input.charAt(i) != ')');
 				}
 				String value = input.substring(start, i);
 				if (value.equalsIgnoreCase("OR")) {
