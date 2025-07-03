@@ -109,7 +109,56 @@ public final class Query {
 	 * @return list of matching tokens
 	 */
 	public List<Token> extractTokens(TokenType tokenType) {
-		return QueryUtils.extractTokens(this, tokenType);
+		List<Token> tokens = new ArrayList<>();
+		extractTokensWithContext(rootNode, tokenType, tokens, false);
+		return tokens;
+	}
+
+	private static void extractTokensWithContext(Node node, TokenType tokenType, List<Token> tokens,
+			boolean insideNot) {
+		if (node instanceof NotNode notNode) {
+			// Mark that we're inside a NOT node
+			extractTokensWithContext(notNode.child(), tokenType, tokens, true);
+		}
+		else if (node.isLeaf()) {
+			switch (tokenType) {
+				case KEYWORD:
+					if (!insideNot && node instanceof TokenNode tokenNode && tokenNode.type() == TokenType.KEYWORD) {
+						tokens.add(tokenNode.token());
+					}
+					break;
+				case PHRASE:
+					if (!insideNot && node instanceof PhraseNode phraseNode) {
+						tokens.add(phraseNode.token());
+					}
+					break;
+				case EXCLUDE:
+					if (insideNot) {
+						if (node instanceof TokenNode tokenNode) {
+							tokens.add(new Token(TokenType.EXCLUDE, tokenNode.value()));
+						}
+						else if (node instanceof PhraseNode phraseNode) {
+							tokens.add(new Token(TokenType.EXCLUDE, phraseNode.phrase()));
+						}
+					}
+					break;
+				case WILDCARD:
+					if (!insideNot && node instanceof WildcardNode wildcardNode) {
+						tokens.add(new Token(TokenType.WILDCARD, wildcardNode.pattern()));
+					}
+					break;
+				default:
+					if (!insideNot && node instanceof TokenNode tokenNode && tokenNode.type() == tokenType) {
+						tokens.add(tokenNode.token());
+					}
+			}
+		}
+		else {
+			// Recurse for non-leaf nodes
+			for (Node child : node.children()) {
+				extractTokensWithContext(child, tokenType, tokens, insideNot);
+			}
+		}
 	}
 
 	/**
@@ -163,7 +212,22 @@ public final class Query {
 	 * @return true if the query is empty
 	 */
 	public boolean isEmpty() {
-		return QueryUtils.isEmpty(this);
+		final boolean[] hasContent = { false };
+		rootNode.walk(node -> {
+			if (!hasContent[0]) {
+				if (node instanceof TokenNode tokenNode) {
+					TokenType type = tokenNode.type();
+					if (type.isContent() || type == TokenType.EXCLUDE) {
+						hasContent[0] = true;
+					}
+				}
+				else if (node instanceof PhraseNode || node instanceof FieldNode || node instanceof WildcardNode
+						|| node instanceof FuzzyNode || node instanceof RangeNode || node instanceof NotNode) {
+					hasContent[0] = true;
+				}
+			}
+		});
+		return !hasContent[0];
 	}
 
 	/**
@@ -171,7 +235,7 @@ public final class Query {
 	 * @return true if the query contains OR operations
 	 */
 	public boolean hasOrOperations() {
-		return QueryUtils.hasTokenType(this, TokenType.OR) || QueryUtils.countNodesOfType(this, OrNode.class) > 0;
+		return hasTokenType(TokenType.OR) || countNodesOfType(OrNode.class) > 0;
 	}
 
 	/**
@@ -179,7 +243,7 @@ public final class Query {
 	 * @return true if the query contains AND operations
 	 */
 	public boolean hasAndOperations() {
-		return QueryUtils.hasTokenType(this, TokenType.AND) || QueryUtils.countNodesOfType(this, AndNode.class) > 0;
+		return hasTokenType(TokenType.AND) || countNodesOfType(AndNode.class) > 0;
 	}
 
 	/**
@@ -187,7 +251,7 @@ public final class Query {
 	 * @return true if the query contains exclusions
 	 */
 	public boolean hasExclusions() {
-		return QueryUtils.hasTokenType(this, TokenType.EXCLUDE);
+		return hasTokenType(TokenType.EXCLUDE);
 	}
 
 	/**
@@ -195,7 +259,98 @@ public final class Query {
 	 * @return true if the query contains phrases
 	 */
 	public boolean hasPhrases() {
-		return QueryUtils.hasTokenType(this, TokenType.PHRASE);
+		return hasTokenType(TokenType.PHRASE);
+	}
+
+	/**
+	 * Checks if the query contains tokens of the specified type.
+	 * @param tokenType the token type to check
+	 * @return true if the query contains the token type
+	 */
+	private boolean hasTokenType(TokenType tokenType) {
+		final boolean[] found = { false };
+		rootNode.walk(node -> {
+			if (!found[0]) {
+				switch (tokenType) {
+					case KEYWORD:
+						if (node instanceof TokenNode tokenNode && tokenNode.type() == TokenType.KEYWORD) {
+							found[0] = true;
+						}
+						break;
+					case PHRASE:
+						if (node instanceof PhraseNode) {
+							found[0] = true;
+						}
+						break;
+					case EXCLUDE:
+						if (node instanceof NotNode) {
+							found[0] = true;
+						}
+						break;
+					case OR:
+						if (node instanceof TokenNode tokenNode && tokenNode.type() == TokenType.OR) {
+							found[0] = true;
+						}
+						break;
+					case AND:
+						if (node instanceof TokenNode tokenNode && tokenNode.type() == TokenType.AND) {
+							found[0] = true;
+						}
+						break;
+					case WILDCARD:
+						if (node instanceof WildcardNode) {
+							found[0] = true;
+						}
+						break;
+					default:
+						if (node instanceof TokenNode tokenNode && tokenNode.type() == tokenType) {
+							found[0] = true;
+						}
+				}
+			}
+		});
+		return found[0];
+	}
+
+	/**
+	 * Counts nodes of a specific type.
+	 * @param nodeClass the node class to count
+	 * @return the count
+	 */
+	private int countNodesOfType(Class<? extends Node> nodeClass) {
+		final int[] count = { 0 };
+		rootNode.walk(node -> {
+			if (nodeClass.isInstance(node)) {
+				count[0]++;
+			}
+		});
+		return count[0];
+	}
+
+	/**
+	 * Finds all nodes of a specific type.
+	 * @param nodeClass the node class to find
+	 * @param <T> the node type
+	 * @return list of matching nodes
+	 */
+	@SuppressWarnings("unchecked")
+	public <T extends Node> List<T> findNodes(Class<T> nodeClass) {
+		List<T> nodes = new ArrayList<>();
+		rootNode.walk(node -> {
+			if (nodeClass.isInstance(node)) {
+				nodes.add((T) node);
+			}
+		});
+		return nodes;
+	}
+
+	/**
+	 * Counts nodes of a specific type (public version).
+	 * @param nodeClass the node class to count
+	 * @return the count
+	 */
+	public int countNodes(Class<? extends Node> nodeClass) {
+		return countNodesOfType(nodeClass);
 	}
 
 	@Override
@@ -210,241 +365,6 @@ public final class Query {
 	@Override
 	public int hashCode() {
 		return Objects.hash(originalQuery, rootNode);
-	}
-
-	/**
-	 * Fluent builder for programmatically constructing queries.
-	 */
-	public static class Builder {
-
-		private final java.util.Stack<BuilderNode> stack = new java.util.Stack<>();
-
-		Builder() {
-			stack.push(new BuilderNode(null, null));
-		}
-
-		/**
-		 * Adds a keyword to the query.
-		 * @param keyword the keyword to add
-		 * @return this builder
-		 */
-		public Builder keyword(String keyword) {
-			Objects.requireNonNull(keyword, "keyword must not be null");
-			stack.peek().children.add(new TokenNode(TokenType.KEYWORD, keyword));
-			return this;
-		}
-
-		/**
-		 * Adds multiple keywords to the query.
-		 * @param keywords the keywords to add
-		 * @return this builder
-		 */
-		public Builder keywords(String... keywords) {
-			for (String keyword : keywords) {
-				keyword(keyword);
-			}
-			return this;
-		}
-
-		/**
-		 * Adds a phrase to the query.
-		 * @param phrase the phrase to add
-		 * @return this builder
-		 */
-		public Builder phrase(String phrase) {
-			Objects.requireNonNull(phrase, "phrase must not be null");
-			stack.peek().children.add(new PhraseNode(phrase));
-			return this;
-		}
-
-		/**
-		 * Adds a field query.
-		 * @param field the field name
-		 * @param value the field value
-		 * @return this builder
-		 */
-		public Builder field(String field, String value) {
-			Objects.requireNonNull(field, "field must not be null");
-			Objects.requireNonNull(value, "value must not be null");
-			stack.peek().children.add(new FieldNode(field, value));
-			return this;
-		}
-
-		/**
-		 * Adds a wildcard query.
-		 * @param pattern the wildcard pattern
-		 * @return this builder
-		 */
-		public Builder wildcard(String pattern) {
-			Objects.requireNonNull(pattern, "pattern must not be null");
-			stack.peek().children.add(new WildcardNode(pattern));
-			return this;
-		}
-
-		/**
-		 * Adds a fuzzy query.
-		 * @param term the term
-		 * @param maxEdits the maximum edit distance (0-2)
-		 * @return this builder
-		 */
-		public Builder fuzzy(String term, int maxEdits) {
-			Objects.requireNonNull(term, "term must not be null");
-			stack.peek().children.add(new FuzzyNode(term, maxEdits));
-			return this;
-		}
-
-		/**
-		 * Adds a fuzzy query with default max edits (2).
-		 * @param term the term
-		 * @return this builder
-		 */
-		public Builder fuzzy(String term) {
-			return fuzzy(term, 2);
-		}
-
-		/**
-		 * Adds a range query.
-		 * @param start the start value
-		 * @param end the end value
-		 * @param includeStart whether to include the start value
-		 * @param includeEnd whether to include the end value
-		 * @return this builder
-		 */
-		public Builder range(String start, String end, boolean includeStart, boolean includeEnd) {
-			stack.peek().children.add(RangeNode.builder()
-				.start(start)
-				.end(end)
-				.includeStart(includeStart)
-				.includeEnd(includeEnd)
-				.build());
-			return this;
-		}
-
-		/**
-		 * Adds an inclusive range query.
-		 * @param start the start value
-		 * @param end the end value
-		 * @return this builder
-		 */
-		public Builder range(String start, String end) {
-			return range(start, end, true, true);
-		}
-
-		/**
-		 * Starts an AND group.
-		 * @return this builder
-		 */
-		public Builder and() {
-			BuilderNode node = new BuilderNode("AND", stack.peek());
-			stack.push(node);
-			return this;
-		}
-
-		/**
-		 * Starts an OR group.
-		 * @return this builder
-		 */
-		public Builder or() {
-			BuilderNode node = new BuilderNode("OR", stack.peek());
-			stack.push(node);
-			return this;
-		}
-
-		/**
-		 * Starts a NOT group.
-		 * @return this builder
-		 */
-		public Builder not() {
-			BuilderNode node = new BuilderNode("NOT", stack.peek());
-			stack.push(node);
-			return this;
-		}
-
-		/**
-		 * Ends the current group.
-		 * @return this builder
-		 */
-		public Builder endGroup() {
-			if (stack.size() > 1) {
-				BuilderNode completed = stack.pop();
-				stack.peek().children.add(completed.toNode());
-			}
-			return this;
-		}
-
-		/**
-		 * Adds an excluded term.
-		 * @param term the term to exclude
-		 * @return this builder
-		 */
-		public Builder exclude(String term) {
-			Objects.requireNonNull(term, "term must not be null");
-			stack.peek().children.add(new NotNode(new TokenNode(TokenType.KEYWORD, term)));
-			return this;
-		}
-
-		/**
-		 * Builds the query.
-		 * @return the built Query
-		 */
-		public Query build() {
-			// Complete any open groups
-			while (stack.size() > 1) {
-				endGroup();
-			}
-
-			BuilderNode root = stack.peek();
-			Node rootNode = root.toNode();
-
-			String queryString = QuerySerializer.serialize(new Query("", rootNode, QueryMetadata.builder().build()));
-
-			return QueryParser.create().parse(queryString);
-		}
-
-		private static class BuilderNode {
-
-			private final String type;
-
-			private final BuilderNode parent;
-
-			private final List<Node> children = new ArrayList<>();
-
-			BuilderNode(String type, BuilderNode parent) {
-				this.type = type;
-				this.parent = parent;
-			}
-
-			Node toNode() {
-				if (type == null) {
-					// Root node
-					if (children.isEmpty()) {
-						return new RootNode();
-					}
-					else if (children.size() == 1) {
-						return children.get(0);
-					}
-					else {
-						return new AndNode(new ArrayList<>(children));
-					}
-				}
-
-				switch (type) {
-					case "AND":
-						return new AndNode(new ArrayList<>(children));
-					case "OR":
-						return new OrNode(new ArrayList<>(children));
-					case "NOT":
-						if (children.size() != 1) {
-							throw new IllegalStateException("NOT must have exactly one child");
-						}
-						return new NotNode(children.get(0));
-					default:
-						throw new IllegalStateException("Unknown node type: " + type);
-				}
-			}
-
-		}
-
 	}
 
 }

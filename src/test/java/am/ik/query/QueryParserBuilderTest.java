@@ -13,7 +13,7 @@ class QueryParserBuilderTest {
 
 		Query query = parser.parse("hello world");
 
-		assertThat(QueryUtils.countNodesOfType(query, AndNode.class)).isEqualTo(1);
+		assertThat(query.countNodes(AndNode.class)).isEqualTo(1);
 	}
 
 	@Test
@@ -22,7 +22,7 @@ class QueryParserBuilderTest {
 
 		Query query = parser.parse("hello world");
 
-		assertThat(QueryUtils.countNodesOfType(query, OrNode.class)).isEqualTo(1);
+		assertThat(query.countNodes(OrNode.class)).isEqualTo(1);
 	}
 
 	@Test
@@ -71,7 +71,7 @@ class QueryParserBuilderTest {
 
 		Query query = parser.parse("hel* wor?d");
 
-		assertThat(QueryUtils.countNodesOfType(query, WildcardNode.class)).isEqualTo(2);
+		assertThat(query.countNodes(WildcardNode.class)).isEqualTo(2);
 	}
 
 	@Test
@@ -80,7 +80,7 @@ class QueryParserBuilderTest {
 
 		Query query = parser.parse("hello~2 world~");
 
-		assertThat(QueryUtils.countNodesOfType(query, FuzzyNode.class)).isEqualTo(2);
+		assertThat(query.countNodes(FuzzyNode.class)).isEqualTo(2);
 	}
 
 	@Test
@@ -89,7 +89,7 @@ class QueryParserBuilderTest {
 
 		Query query = parser.parse("[1 TO 10] {a TO z}");
 
-		assertThat(QueryUtils.countNodesOfType(query, RangeNode.class)).isEqualTo(2);
+		assertThat(query.countNodes(RangeNode.class)).isEqualTo(2);
 	}
 
 	@Test
@@ -98,7 +98,7 @@ class QueryParserBuilderTest {
 
 		Query query = parser.parse("title:hello author:\"John Doe\"");
 
-		assertThat(QueryUtils.countNodesOfType(query, FieldNode.class)).isEqualTo(2);
+		assertThat(query.countNodes(FieldNode.class)).isEqualTo(2);
 	}
 
 	@Test
@@ -107,7 +107,7 @@ class QueryParserBuilderTest {
 
 		Query query = parser.parse("NOT hello");
 
-		assertThat(QueryUtils.countNodesOfType(query, NotNode.class)).isEqualTo(1);
+		assertThat(query.countNodes(NotNode.class)).isEqualTo(1);
 	}
 
 	@Test
@@ -127,7 +127,7 @@ class QueryParserBuilderTest {
 
 		assertThat(query.hasAndOperations()).isTrue();
 		assertThat(query.hasOrOperations()).isTrue();
-		assertThat(QueryUtils.countNodesOfType(query, NotNode.class)).isGreaterThan(0);
+		assertThat(query.countNodes(NotNode.class)).isGreaterThan(0);
 	}
 
 }

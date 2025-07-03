@@ -188,7 +188,7 @@ class QueryTest {
 		Query query = QueryParser.create().parse("title:hello");
 
 		assertThat(query.isEmpty()).isFalse();
-		assertThat(QueryUtils.countNodesOfType(query, FieldNode.class)).isEqualTo(1);
+		assertThat(query.countNodes(FieldNode.class)).isEqualTo(1);
 	}
 
 	@Test
@@ -196,7 +196,7 @@ class QueryTest {
 		Query query = QueryParser.create().parse("hel*");
 
 		assertThat(query.isEmpty()).isFalse();
-		assertThat(QueryUtils.countNodesOfType(query, WildcardNode.class)).isEqualTo(1);
+		assertThat(query.countNodes(WildcardNode.class)).isEqualTo(1);
 	}
 
 	@Test
@@ -204,7 +204,7 @@ class QueryTest {
 		Query query = QueryParser.create().parse("hello~2");
 
 		assertThat(query.isEmpty()).isFalse();
-		assertThat(QueryUtils.countNodesOfType(query, FuzzyNode.class)).isEqualTo(1);
+		assertThat(query.countNodes(FuzzyNode.class)).isEqualTo(1);
 	}
 
 	@Test
@@ -212,7 +212,7 @@ class QueryTest {
 		Query query = QueryParser.create().parse("[1 TO 10]");
 
 		assertThat(query.isEmpty()).isFalse();
-		assertThat(QueryUtils.countNodesOfType(query, RangeNode.class)).isEqualTo(1);
+		assertThat(query.countNodes(RangeNode.class)).isEqualTo(1);
 	}
 
 	@Test

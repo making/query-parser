@@ -68,7 +68,7 @@ public final class QueryParser {
 			QueryMetadata metadata = QueryMetadata.builder()
 				.tokenCount(tokens.size())
 				.nodeCount(countNodes(rootNode))
-				.maxDepth(QueryUtils.calculateMaxDepth(rootNode))
+				.maxDepth(calculateMaxDepth(rootNode))
 				.parseTimeNanos(parseTime)
 				.parsedAt(parsedAt)
 				.property("originalTokens", tokens)
@@ -397,6 +397,24 @@ public final class QueryParser {
 		final int[] count = { 0 };
 		node.walk(n -> count[0]++);
 		return count[0];
+	}
+
+	/**
+	 * Calculates the maximum depth of a query AST.
+	 * @param node the root node
+	 * @return the maximum depth
+	 */
+	private static int calculateMaxDepth(Node node) {
+		if (node.isLeaf()) {
+			return 1;
+		}
+
+		int maxChildDepth = 0;
+		for (Node child : node.children()) {
+			maxChildDepth = Math.max(maxChildDepth, calculateMaxDepth(child));
+		}
+
+		return maxChildDepth + 1;
 	}
 
 	/**

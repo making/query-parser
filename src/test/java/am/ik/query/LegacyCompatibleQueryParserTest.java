@@ -64,7 +64,7 @@ class LegacyCompatibleQueryParserTest {
 		assertThat(query.extractKeywords()).containsExactly("hello", "world");
 		assertThat(query.isEmpty()).isFalse();
 		// Space-separated terms create AndNode structure
-		assertThat(QueryUtils.countNodesOfType(query, AndNode.class)).isGreaterThan(0);
+		assertThat(query.countNodes(AndNode.class)).isGreaterThan(0);
 		assertThat(query.hasAndOperations()).isTrue(); // True because AndNode exists
 
 		// Verify structure with space-separated terms
@@ -80,7 +80,7 @@ class LegacyCompatibleQueryParserTest {
 		assertThat(query.hasOrOperations()).isTrue();
 
 		// Structure will be OrNode due to modern parser
-		assertThat(QueryUtils.countNodesOfType(query, OrNode.class)).isGreaterThan(0);
+		assertThat(query.countNodes(OrNode.class)).isGreaterThan(0);
 		assertThat(query.rootNode()).isInstanceOf(OrNode.class);
 	}
 
@@ -93,7 +93,7 @@ class LegacyCompatibleQueryParserTest {
 		assertThat(query.extractPhrases()).containsExactly("or");
 		assertThat(query.hasPhrases()).isTrue();
 		// Space-separated terms create AND structure
-		assertThat(QueryUtils.countNodesOfType(query, AndNode.class)).isGreaterThan(0);
+		assertThat(query.countNodes(AndNode.class)).isGreaterThan(0);
 
 		// With default AND operator, this becomes: hello AND "or" AND world
 		assertThat(query.rootNode()).isInstanceOf(AndNode.class);
@@ -109,8 +109,8 @@ class LegacyCompatibleQueryParserTest {
 		assertThat(query.hasExclusions()).isTrue();
 
 		// Structure will include AndNode and NotNode due to modern parser
-		assertThat(QueryUtils.countNodesOfType(query, AndNode.class)).isGreaterThan(0);
-		assertThat(QueryUtils.countNodesOfType(query, NotNode.class)).isGreaterThan(0);
+		assertThat(query.countNodes(AndNode.class)).isGreaterThan(0);
+		assertThat(query.countNodes(NotNode.class)).isGreaterThan(0);
 	}
 
 	@Test
@@ -120,8 +120,8 @@ class LegacyCompatibleQueryParserTest {
 		// Modern API assertions
 		assertThat(query.extractKeywords()).containsExactly("hello", "world", "java");
 		assertThat(query.hasOrOperations()).isTrue();
-		assertThat(QueryUtils.countNodesOfType(query, OrNode.class)).isGreaterThan(0);
-		assertThat(QueryUtils.countNodesOfType(query, AndNode.class)).isGreaterThan(0);
+		assertThat(query.countNodes(OrNode.class)).isGreaterThan(0);
+		assertThat(query.countNodes(AndNode.class)).isGreaterThan(0);
 
 		// Modern parser creates proper nested structure with AndNode and OrNode
 		assertThat(query.rootNode()).isInstanceOf(AndNode.class);
@@ -134,8 +134,8 @@ class LegacyCompatibleQueryParserTest {
 		// Modern API assertions
 		assertThat(query.extractKeywords()).containsExactly("hello", "world", "java", "test");
 		assertThat(query.hasOrOperations()).isTrue();
-		assertThat(QueryUtils.countNodesOfType(query, OrNode.class)).isGreaterThan(0);
-		assertThat(QueryUtils.countNodesOfType(query, AndNode.class)).isGreaterThan(0);
+		assertThat(query.countNodes(OrNode.class)).isGreaterThan(0);
+		assertThat(query.countNodes(AndNode.class)).isGreaterThan(0);
 
 		// Modern parser creates proper nested structure
 		assertThat(query.rootNode()).isInstanceOf(AndNode.class);
@@ -148,8 +148,8 @@ class LegacyCompatibleQueryParserTest {
 		// Modern API assertions
 		assertThat(query.extractKeywords()).containsExactly("hello", "world", "java", "bean");
 		assertThat(query.hasOrOperations()).isTrue();
-		assertThat(QueryUtils.countNodesOfType(query, OrNode.class)).isGreaterThan(0);
-		assertThat(QueryUtils.countNodesOfType(query, AndNode.class)).isGreaterThan(0);
+		assertThat(query.countNodes(OrNode.class)).isGreaterThan(0);
+		assertThat(query.countNodes(AndNode.class)).isGreaterThan(0);
 
 		// Verify proper nesting depth
 		assertThat(query.metadata().maxDepth()).isGreaterThan(2);
@@ -228,12 +228,12 @@ class LegacyCompatibleQueryParserTest {
 		assertThat(explicitQuery.extractKeywords()).containsExactly("java", "spring", "framework");
 
 		// Both queries should have AndNode structure and AND operations
-		assertThat(QueryUtils.countNodesOfType(spaceSeparatedQuery, AndNode.class)).isGreaterThan(0);
+		assertThat(spaceSeparatedQuery.countNodes(AndNode.class)).isGreaterThan(0);
 		assertThat(spaceSeparatedQuery.hasAndOperations()).isTrue(); // True because
 																		// AndNode exists
 
 		// Explicit query should also have AndNode structure and AND operations
-		assertThat(QueryUtils.countNodesOfType(explicitQuery, AndNode.class)).isGreaterThan(0);
+		assertThat(explicitQuery.countNodes(AndNode.class)).isGreaterThan(0);
 		assertThat(explicitQuery.hasAndOperations()).isTrue(); // True because AndNode
 																// exists
 	}

@@ -45,7 +45,7 @@ class LegacyCompatibilityTest {
 		assertThat(query.extractKeywords()).containsExactly("java", "spring", "boot");
 
 		// Space-separated terms create AndNode structure
-		assertThat(QueryUtils.countNodesOfType(query, AndNode.class)).isGreaterThan(0);
+		assertThat(query.countNodes(AndNode.class)).isGreaterThan(0);
 		assertThat(query.hasAndOperations()).isTrue(); // True because AndNode exists
 	}
 
