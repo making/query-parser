@@ -176,7 +176,7 @@ class QueryTest {
 	@Test
 	void testPrettyPrint() {
 		Query query = QueryParser.create().parse("hello world");
-		String pretty = query.toPrettyString();
+		String pretty = QueryPrinter.toPrettyString(query);
 
 		assertThat(pretty).contains("Query:");
 		assertThat(pretty).contains("AST:");

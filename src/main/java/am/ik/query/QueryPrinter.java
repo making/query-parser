@@ -14,22 +14,6 @@ public class QueryPrinter {
 	}
 
 	/**
-	 * Prints a query to stdout.
-	 * @param query the query to print
-	 */
-	public static void print(Query query) {
-		System.out.println(toPrettyString(query));
-	}
-
-	/**
-	 * Prints a node to stdout.
-	 * @param node the node to print
-	 */
-	public static void print(Node node) {
-		System.out.println(toPrettyString(node));
-	}
-
-	/**
 	 * Converts a query to a pretty string.
 	 * @param query the query to convert
 	 * @return the pretty string

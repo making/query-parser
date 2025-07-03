@@ -85,22 +85,7 @@ public final class Query {
 	 */
 	@Override
 	public String toString() {
-		return QuerySerializer.serialize(this);
-	}
-
-	/**
-	 * Pretty prints this query to the console.
-	 */
-	public void prettyPrint() {
-		QueryPrinter.print(this);
-	}
-
-	/**
-	 * Pretty prints this query and returns the string representation.
-	 * @return the pretty printed string
-	 */
-	public String toPrettyString() {
-		return QueryPrinter.toPrettyString(this);
+		return this.rootNode().accept(new SerializerVisitor());
 	}
 
 	/**
