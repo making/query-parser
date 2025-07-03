@@ -15,7 +15,6 @@ A powerful and flexible query parsing library for Java that transforms search qu
 ## Requirements
 
 - Java 17 or higher
-- Maven 3.6 or higher
 
 ## Installation
 
@@ -42,10 +41,6 @@ Query query = QueryParser.create().parse("java AND (spring OR boot)");
 
 // Extract keywords
 List<String> keywords = query.extractKeywords();  // ["java", "spring", "boot"]
-
-// Check query properties
-boolean isEmpty = query.isEmpty();                 // false
-boolean hasKeywords = !query.extractKeywords().isEmpty();  // true
 ```
 
 ### Using the Parser Builder
@@ -359,11 +354,6 @@ List<String> phrases = query.extractPhrases();             // []
 List<String> wildcards = query.extractWildcards();         // ["john*"]
 List<String> exclusions = query.extractExclusions();       // ["deprecated"]
 Map<String, List<String>> fields = query.extractFields();  // {"title": ["spring"], "author": ["john*"]}
-
-// Query analysis - use extract methods instead
-boolean isEmpty = query.isEmpty();
-boolean hasExclusions = !query.extractExclusions().isEmpty();
-boolean hasPhrases = !query.extractPhrases().isEmpty();
 ```
 
 ## Performance Considerations
