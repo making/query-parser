@@ -35,7 +35,7 @@ Add the following dependency to your `pom.xml`:
 
 ```java
 import am.ik.query.Query;
-import am.ik.query.QueryParser;
+import am.ik.query.parser.QueryParser;
 
 // Parse a simple query
 Query query = QueryParser.create().parse("java AND (spring OR boot)");
@@ -51,8 +51,8 @@ boolean hasOr = query.hasOrOperations();          // true
 ### Using the Parser Builder
 
 ```java
-import am.ik.query.QueryParser;
-import am.ik.query.QueryParser.BooleanOperator;
+import am.ik.query.parser.QueryParser;
+import am.ik.query.parser.QueryParser.BooleanOperator;
 
 // Create a customized parser
 QueryParser parser = QueryParser.builder()
@@ -367,10 +367,6 @@ The project uses Spring Java Format. Format code before committing:
 ./mvnw spring-javaformat:apply
 ```
 
-## License
-
-Licensed under the Apache License, Version 2.0. See [LICENSE](LICENSE) file for details.
-
 ## v0.1 Compatibility Mode
 
 If you need to restrict the parser to the same feature set as v0.1 (legacy version), you can configure it to only allow basic query syntax:
@@ -442,3 +438,7 @@ Contributions are welcome! Please feel free to submit a Pull Request.
 ## Author
 
 Toshiaki Maki (@making)
+
+## License
+
+Licensed under the Apache License, Version 2.0. See [LICENSE](LICENSE) file for details.
