@@ -70,8 +70,8 @@ class QueryParserBuilderTest {
 
 		Query query = parser.parse("(java OR python) AND (\"web development\" OR \"data science\") -basic");
 
-		assertThat(query.hasOrOperations()).isTrue();
-		assertThat(query.hasAndOperations()).isTrue();
+		assertThat(query.countNodes(OrNode.class)).isGreaterThan(0);
+		assertThat(query.countNodes(AndNode.class)).isGreaterThan(0);
 		assertThat(query.hasPhrases()).isTrue();
 		assertThat(query.hasExclusions()).isTrue();
 	}
@@ -136,8 +136,8 @@ class QueryParserBuilderTest {
 
 		Query query = parser.parse("hello AND world OR java NOT python");
 
-		assertThat(query.hasAndOperations()).isTrue();
-		assertThat(query.hasOrOperations()).isTrue();
+		assertThat(query.countNodes(AndNode.class)).isGreaterThan(0);
+		assertThat(query.countNodes(OrNode.class)).isGreaterThan(0);
 		assertThat(query.countNodes(NotNode.class)).isGreaterThan(0);
 	}
 

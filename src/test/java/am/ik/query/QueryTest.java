@@ -1,8 +1,10 @@
 package am.ik.query;
 
+import am.ik.query.ast.AndNode;
 import am.ik.query.ast.FieldNode;
 import am.ik.query.ast.FuzzyNode;
 import am.ik.query.ast.Node;
+import am.ik.query.ast.OrNode;
 import am.ik.query.ast.RangeNode;
 import am.ik.query.ast.RootNode;
 import am.ik.query.ast.TokenNode;
@@ -30,8 +32,9 @@ class QueryTest {
 		assertThat(query.extractKeywords()).containsExactly("hello", "world");
 		assertThat(query.hasPhrases()).isFalse();
 		assertThat(query.hasExclusions()).isFalse();
-		assertThat(query.hasOrOperations()).isFalse();
-		assertThat(query.hasAndOperations()).isTrue(); // Now true because AndNode exists
+		assertThat(query.countNodes(OrNode.class)).isEqualTo(0);
+		assertThat(query.countNodes(AndNode.class)).isGreaterThan(0); // Now true because
+																		// AndNode exists
 	}
 
 	@Test
@@ -56,7 +59,7 @@ class QueryTest {
 	void testOrQuery() {
 		Query query = QueryParser.create().parse("hello OR world");
 
-		assertThat(query.hasOrOperations()).isTrue();
+		assertThat(query.countNodes(OrNode.class)).isGreaterThan(0);
 		assertThat(query.extractKeywords()).containsExactly("hello", "world");
 	}
 
@@ -64,7 +67,7 @@ class QueryTest {
 	void testAndQuery() {
 		Query query = QueryParser.create().parse("hello AND world");
 
-		assertThat(query.hasAndOperations()).isTrue();
+		assertThat(query.countNodes(AndNode.class)).isGreaterThan(0);
 		assertThat(query.extractKeywords()).containsExactly("hello", "world");
 	}
 
@@ -72,8 +75,8 @@ class QueryTest {
 	void testComplexQuery() {
 		Query query = QueryParser.create().parse("(hello OR world) AND \"foo bar\" -baz");
 
-		assertThat(query.hasOrOperations()).isTrue();
-		assertThat(query.hasAndOperations()).isTrue();
+		assertThat(query.countNodes(OrNode.class)).isGreaterThan(0);
+		assertThat(query.countNodes(AndNode.class)).isGreaterThan(0);
 		assertThat(query.hasPhrases()).isTrue();
 		assertThat(query.hasExclusions()).isTrue();
 

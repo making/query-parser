@@ -38,8 +38,8 @@ class ReadmeExamplesTest {
 		assertThat(keywords).containsExactlyInAnyOrder("java", "spring", "boot");
 
 		// Check query properties
-		boolean hasAnd = query.hasAndOperations();
-		boolean hasOr = query.hasOrOperations();
+		boolean hasAnd = query.countNodes(AndNode.class) > 0;
+		boolean hasOr = query.countNodes(OrNode.class) > 0;
 		assertThat(hasAnd).isTrue();
 		assertThat(hasOr).isTrue();
 	}
@@ -62,10 +62,10 @@ class ReadmeExamplesTest {
 	void testBooleanOperators() {
 		// Explicit operators
 		Query q1 = QueryParser.create().parse("java AND spring");
-		assertThat(q1.hasAndOperations()).isTrue();
+		assertThat(q1.countNodes(AndNode.class)).isGreaterThan(0);
 
 		Query q2 = QueryParser.create().parse("java OR kotlin");
-		assertThat(q2.hasOrOperations()).isTrue();
+		assertThat(q2.countNodes(OrNode.class)).isGreaterThan(0);
 
 		// Complex boolean expressions
 		Query q3 = QueryParser.create().parse("(java OR kotlin) AND spring");
@@ -321,8 +321,8 @@ class ReadmeExamplesTest {
 		assertThat(query.extractExclusions()).containsExactlyInAnyOrder("deprecated", "legacy");
 
 		// Verify operations
-		assertThat(query.hasAndOperations()).isTrue();
-		assertThat(query.hasOrOperations()).isTrue();
+		assertThat(query.countNodes(AndNode.class)).isGreaterThan(0);
+		assertThat(query.countNodes(OrNode.class)).isGreaterThan(0);
 		assertThat(query.hasExclusions()).isTrue();
 	}
 

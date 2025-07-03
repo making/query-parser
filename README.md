@@ -44,8 +44,8 @@ Query query = QueryParser.create().parse("java AND (spring OR boot)");
 List<String> keywords = query.extractKeywords();  // ["java", "spring", "boot"]
 
 // Check query properties
-boolean hasAnd = query.hasAndOperations();        // true
-boolean hasOr = query.hasOrOperations();          // true
+boolean hasExclusions = query.hasExclusions();    // false  
+boolean isEmpty = query.isEmpty();                 // false
 ```
 
 ### Using the Parser Builder
@@ -62,7 +62,6 @@ QueryParser parser = QueryParser.builder()
     .build();
 
 Query query = parser.parse("java spring boot");  // Interpreted as: java AND spring AND boot
-// Note: hasAndOperations() returns true when AND operations exist (explicit or implicit)
 ```
 
 ## Query Syntax
@@ -350,10 +349,9 @@ List<String> wildcards = query.extractWildcards();         // ["john*"]
 List<String> exclusions = query.extractExclusions();       // ["deprecated"]
 Map<String, List<String>> fields = query.extractFields();  // {"title": ["spring"], "author": ["john*"]}
 
-// Query analysis methods
-boolean hasAnd = query.hasAndOperations();
-boolean hasOr = query.hasOrOperations();
+// Query analysis methods  
 boolean hasExclusions = query.hasExclusions();
+boolean hasPhrases = query.hasPhrases();
 boolean isEmpty = query.isEmpty();
 ```
 

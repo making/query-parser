@@ -1,6 +1,7 @@
 package am.ik.query;
 
 import am.ik.query.ast.AndNode;
+import am.ik.query.ast.OrNode;
 import am.ik.query.lexer.TokenType;
 import am.ik.query.parser.QueryParser;
 import am.ik.query.transform.QueryNormalizer;
@@ -52,7 +53,6 @@ class LegacyCompatibilityTest {
 
 		// Space-separated terms create AndNode structure
 		assertThat(query.countNodes(AndNode.class)).isGreaterThan(0);
-		assertThat(query.hasAndOperations()).isTrue(); // True because AndNode exists
 	}
 
 	@Test
@@ -66,12 +66,12 @@ class LegacyCompatibilityTest {
 	void testBooleanOperators() {
 		// AND operator
 		Query andQuery = legacyCompatibleParser.parse("java AND spring");
-		assertThat(andQuery.hasAndOperations()).isTrue();
+		assertThat(andQuery.countNodes(AndNode.class)).isGreaterThan(0);
 		assertThat(andQuery.extractKeywords()).containsExactly("java", "spring");
 
 		// OR operator
 		Query orQuery = legacyCompatibleParser.parse("java OR kotlin");
-		assertThat(orQuery.hasOrOperations()).isTrue();
+		assertThat(orQuery.countNodes(OrNode.class)).isGreaterThan(0);
 		assertThat(orQuery.extractKeywords()).containsExactly("java", "kotlin");
 
 		// NOT operator
@@ -92,8 +92,8 @@ class LegacyCompatibilityTest {
 	void testGroupingWithParentheses() {
 		// Parentheses for grouping should work
 		Query query = legacyCompatibleParser.parse("(java OR kotlin) AND spring");
-		assertThat(query.hasOrOperations()).isTrue();
-		assertThat(query.hasAndOperations()).isTrue();
+		assertThat(query.countNodes(OrNode.class)).isGreaterThan(0);
+		assertThat(query.countNodes(AndNode.class)).isGreaterThan(0);
 		assertThat(query.extractKeywords()).containsExactly("java", "kotlin", "spring");
 	}
 
@@ -106,8 +106,8 @@ class LegacyCompatibilityTest {
 		assertThat(query.extractPhrases()).containsExactly("Spring Boot", "Spring Framework");
 		assertThat(query.extractKeywords()).containsExactly("java");
 		assertThat(query.extractExclusions()).containsExactly("android", "legacy");
-		assertThat(query.hasOrOperations()).isTrue();
-		assertThat(query.hasAndOperations()).isTrue();
+		assertThat(query.countNodes(OrNode.class)).isGreaterThan(0);
+		assertThat(query.countNodes(AndNode.class)).isGreaterThan(0);
 		assertThat(query.hasExclusions()).isTrue();
 	}
 
@@ -180,7 +180,7 @@ class LegacyCompatibilityTest {
 		Query modernResult = modernParser.parse(basicQuery);
 
 		assertThat(legacyResult.extractKeywords()).isEqualTo(modernResult.extractKeywords());
-		assertThat(legacyResult.hasAndOperations()).isEqualTo(modernResult.hasAndOperations());
+		assertThat(legacyResult.countNodes(AndNode.class)).isEqualTo(modernResult.countNodes(AndNode.class));
 
 		// Advanced query should only work in modern
 		String advancedQuery = "title:spring";

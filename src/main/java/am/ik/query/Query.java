@@ -219,22 +219,6 @@ public final class Query {
 	}
 
 	/**
-	 * Checks if the query contains any OR operations.
-	 * @return true if the query contains OR operations
-	 */
-	public boolean hasOrOperations() {
-		return hasTokenType(TokenType.OR) || countNodesOfType(OrNode.class) > 0;
-	}
-
-	/**
-	 * Checks if the query contains any AND operations.
-	 * @return true if the query contains AND operations
-	 */
-	public boolean hasAndOperations() {
-		return hasTokenType(TokenType.AND) || countNodesOfType(AndNode.class) > 0;
-	}
-
-	/**
 	 * Checks if the query contains any exclusions.
 	 * @return true if the query contains exclusions
 	 */
