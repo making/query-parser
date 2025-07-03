@@ -28,32 +28,6 @@ public final class Query {
 	}
 
 	/**
-	 * Creates a new Query parser builder.
-	 * @return a new parser builder
-	 */
-	public static QueryParser.Builder parser() {
-		return QueryParser.builder();
-	}
-
-	/**
-	 * Creates a new Query builder for programmatic query construction.
-	 * @return a new query builder
-	 */
-	public static Builder builder() {
-		return new Builder();
-	}
-
-	/**
-	 * Parses the given query string using default settings.
-	 * @param query the query string to parse
-	 * @return the parsed Query object
-	 * @throws QueryParseException if the query is invalid
-	 */
-	public static Query parse(String query) {
-		return parser().build().parse(query);
-	}
-
-	/**
 	 * Gets the original query string.
 	 * @return the original query string
 	 */
@@ -447,7 +421,7 @@ public final class Query {
 
 			String queryString = QuerySerializer.serialize(new Query("", rootNode, QueryMetadata.builder().build()));
 
-			return Query.parse(queryString);
+			return QueryParser.create().parse(queryString);
 		}
 
 		private static class BuilderNode {

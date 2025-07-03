@@ -9,7 +9,7 @@ class QueryValidatorTest {
 
 	@Test
 	void testValidQuery() {
-		Query query = Query.parse("hello world");
+		Query query = QueryParser.create().parse("hello world");
 		ValidationResult result = query.validate();
 
 		assertThat(result.isValid()).isTrue();
@@ -18,7 +18,7 @@ class QueryValidatorTest {
 
 	@Test
 	void testEmptyQuery() {
-		Query query = Query.parse("");
+		Query query = QueryParser.create().parse("");
 		ValidationResult result = query.validate();
 
 		assertThat(result.isValid()).isFalse();
@@ -42,7 +42,7 @@ class QueryValidatorTest {
 
 	@Test
 	void testConflictingTerms() {
-		Query query = Query.parse("hello AND -hello");
+		Query query = QueryParser.create().parse("hello AND -hello");
 		ValidationResult result = query.validate();
 
 		assertThat(result.isValid()).isFalse();
@@ -51,7 +51,7 @@ class QueryValidatorTest {
 
 	@Test
 	void testAllNegativeOr() {
-		Query query = Query.parse("-hello OR -world");
+		Query query = QueryParser.create().parse("-hello OR -world");
 		ValidationResult result = query.validate();
 
 		assertThat(result.isValid()).isFalse();
@@ -80,7 +80,7 @@ class QueryValidatorTest {
 
 	@Test
 	void testShortFuzzyTerm() {
-		Query query = Query.parse("ab~2");
+		Query query = QueryParser.create().parse("ab~2");
 		ValidationResult result = query.validate();
 
 		assertThat(result.isValid()).isFalse();
@@ -109,7 +109,7 @@ class QueryValidatorTest {
 
 	@Test
 	void testThrowIfInvalid() {
-		Query query = Query.parse("");
+		Query query = QueryParser.create().parse("");
 		ValidationResult result = query.validate();
 
 		assertThatThrownBy(() -> result.throwIfInvalid()).isInstanceOf(QueryValidationException.class);

@@ -55,7 +55,7 @@ class QueryParserBuilderTest {
 
 	@Test
 	void testComplexNestedQuery() {
-		QueryParser parser = QueryParser.builder().build();
+		QueryParser parser = QueryParser.create();
 
 		Query query = parser.parse("(java OR python) AND (\"web development\" OR \"data science\") -basic");
 
@@ -67,7 +67,7 @@ class QueryParserBuilderTest {
 
 	@Test
 	void testWildcardSupport() {
-		QueryParser parser = QueryParser.builder().build();
+		QueryParser parser = QueryParser.create();
 
 		Query query = parser.parse("hel* wor?d");
 
@@ -76,7 +76,7 @@ class QueryParserBuilderTest {
 
 	@Test
 	void testFuzzySupport() {
-		QueryParser parser = QueryParser.builder().build();
+		QueryParser parser = QueryParser.create();
 
 		Query query = parser.parse("hello~2 world~");
 
@@ -85,7 +85,7 @@ class QueryParserBuilderTest {
 
 	@Test
 	void testRangeSupport() {
-		QueryParser parser = QueryParser.builder().build();
+		QueryParser parser = QueryParser.create();
 
 		Query query = parser.parse("[1 TO 10] {a TO z}");
 
@@ -94,7 +94,7 @@ class QueryParserBuilderTest {
 
 	@Test
 	void testFieldSupport() {
-		QueryParser parser = QueryParser.builder().build();
+		QueryParser parser = QueryParser.create();
 
 		Query query = parser.parse("title:hello author:\"John Doe\"");
 
@@ -103,7 +103,7 @@ class QueryParserBuilderTest {
 
 	@Test
 	void testNotOperator() {
-		QueryParser parser = QueryParser.builder().build();
+		QueryParser parser = QueryParser.create();
 
 		Query query = parser.parse("NOT hello");
 
@@ -112,7 +112,7 @@ class QueryParserBuilderTest {
 
 	@Test
 	void testRequiredOperator() {
-		QueryParser parser = QueryParser.builder().build();
+		QueryParser parser = QueryParser.create();
 
 		Query query = parser.parse("+hello world");
 
@@ -121,7 +121,7 @@ class QueryParserBuilderTest {
 
 	@Test
 	void testMixedOperators() {
-		QueryParser parser = QueryParser.builder().build();
+		QueryParser parser = QueryParser.create();
 
 		Query query = parser.parse("hello AND world OR java NOT python");
 

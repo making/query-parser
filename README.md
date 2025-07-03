@@ -35,9 +35,10 @@ Add the following dependency to your `pom.xml`:
 
 ```java
 import am.ik.query.Query;
+import am.ik.query.QueryParser;
 
 // Parse a simple query
-Query query = Query.parse("java AND (spring OR boot)");
+Query query = QueryParser.create().parse("java AND (spring OR boot)");
 
 // Extract keywords
 List<String> keywords = query.extractKeywords();  // ["java", "spring", "boot"]
@@ -70,25 +71,25 @@ Query query = parser.parse("java spring boot");  // Interpreted as: java AND spr
 
 ```java
 // Explicit operators
-Query.parse("java AND spring");
-Query.parse("java OR kotlin");
-Query.parse("java NOT android");  // NOT creates exclusions (same as -)
+QueryParser.create().parse("java AND spring");
+QueryParser.create().parse("java OR kotlin");
+QueryParser.create().parse("java NOT android");  // NOT creates exclusions (same as -)
 
 // Implicit AND (default behavior)
-Query.parse("java spring");  // Same as: java AND spring
+QueryParser.create().parse("java spring");  // Same as: java AND spring
 
 // Complex boolean expressions
-Query.parse("(java OR kotlin) AND (spring OR boot) NOT legacy");
+QueryParser.create().parse("(java OR kotlin) AND (spring OR boot) NOT legacy");
 ```
 
 ### Phrases
 
 ```java
 // Exact phrase matching
-Query.parse("\"hello world\"");
+QueryParser.create().parse("\"hello world\"");
 
 // Phrases in complex queries  
-Query.parse("\"Spring Boot\" AND \"Josh Long\"");
+QueryParser.create().parse("\"Spring Boot\" AND \"Josh Long\"");
 
 // Note: Field phrases are extracted via extractFields(), not extractPhrases()
 ```
@@ -97,41 +98,41 @@ Query.parse("\"Spring Boot\" AND \"Josh Long\"");
 
 ```java
 // ? matches single character, * matches multiple characters
-Query.parse("spr?ng");      // Matches: spring, sprang
-Query.parse("spring*");     // Matches: spring, springframework, springboot
-Query.parse("*boot*");      // Matches: boot, springboot, bootstrap
+QueryParser.create().parse("spr?ng");      // Matches: spring, sprang
+QueryParser.create().parse("spring*");     // Matches: spring, springframework, springboot
+QueryParser.create().parse("*boot*");      // Matches: boot, springboot, bootstrap
 ```
 
 ### Fuzzy Search
 
 ```java
 // Default edit distance (2)
-Query.parse("spring~");
+QueryParser.create().parse("spring~");
 
 // Specific edit distance
-Query.parse("spring~1");    // Maximum 1 character difference
+QueryParser.create().parse("spring~1");    // Maximum 1 character difference
 ```
 
 ### Field Queries
 
 ```java
 // Field-specific search
-Query.parse("title:spring");
-Query.parse("author:\"John Doe\"");  // Field phrases work correctly
-Query.parse("date:2024 AND status:published");
+QueryParser.create().parse("title:spring");
+QueryParser.create().parse("author:\"John Doe\"");  // Field phrases work correctly
+QueryParser.create().parse("date:2024 AND status:published");
 ```
 
 ### Range Queries
 
 ```java
 // Inclusive ranges
-Query.parse("[1 TO 10]");          // 1 <= x <= 10
+QueryParser.create().parse("[1 TO 10]");          // 1 <= x <= 10
 
 // Exclusive ranges
-Query.parse("{1 TO 10}");          // 1 < x < 10
+QueryParser.create().parse("{1 TO 10}");          // 1 < x < 10
 
 // Mixed ranges
-Query.parse("[1 TO 10}");          // 1 <= x < 10
+QueryParser.create().parse("[1 TO 10}");          // 1 <= x < 10
 
 // Note: Field-specific ranges like "price:[100 TO 500]" are not supported
 // Use separate field queries instead
@@ -141,8 +142,8 @@ Query.parse("[1 TO 10}");          // 1 <= x < 10
 
 ```java
 // Exclude terms
-Query.parse("java -android");      // Java but not Android
-Query.parse("spring -legacy -deprecated");  // Individual exclusions work better than grouped
+QueryParser.create().parse("java -android");      // Java but not Android
+QueryParser.create().parse("spring -legacy -deprecated");  // Individual exclusions work better than grouped
 ```
 
 ## Advanced Features
@@ -150,7 +151,7 @@ Query.parse("spring -legacy -deprecated");  // Individual exclusions work better
 ### Query Traversal
 
 ```java
-Query query = Query.parse("java AND (spring OR boot)");
+Query query = QueryParser.create().parse("java AND (spring OR boot)");
 
 // Walk through all nodes
 query.walk(node -> {
@@ -310,7 +311,7 @@ QueryParser parser = QueryParser.builder()
 ## Query Analysis
 
 ```java
-Query query = Query.parse("title:spring AND (java OR kotlin) -deprecated author:john*");
+Query query = QueryParser.create().parse("title:spring AND (java OR kotlin) -deprecated author:john*");
 
 // Extract different components
 List<String> keywords = query.extractKeywords();           // ["java", "kotlin"]

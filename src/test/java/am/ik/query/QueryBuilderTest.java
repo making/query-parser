@@ -8,28 +8,28 @@ class QueryBuilderTest {
 
 	@Test
 	void testSimpleKeyword() {
-		Query query = Query.builder().keyword("hello").build();
+		Query query = new Query.Builder().keyword("hello").build();
 
 		assertThat(query.extractKeywords()).containsExactly("hello");
 	}
 
 	@Test
 	void testMultipleKeywords() {
-		Query query = Query.builder().keywords("hello", "world").build();
+		Query query = new Query.Builder().keywords("hello", "world").build();
 
 		assertThat(query.extractKeywords()).containsExactlyInAnyOrder("hello", "world");
 	}
 
 	@Test
 	void testPhrase() {
-		Query query = Query.builder().phrase("hello world").build();
+		Query query = new Query.Builder().phrase("hello world").build();
 
 		assertThat(query.extractPhrases()).containsExactly("hello world");
 	}
 
 	@Test
 	void testField() {
-		Query query = Query.builder().field("title", "hello").build();
+		Query query = new Query.Builder().field("title", "hello").build();
 
 		assertThat(QueryUtils.findNodes(query, FieldNode.class)).hasSize(1).first().satisfies(node -> {
 			assertThat(node.field()).isEqualTo("title");
@@ -39,7 +39,7 @@ class QueryBuilderTest {
 
 	@Test
 	void testWildcard() {
-		Query query = Query.builder().wildcard("hel*").build();
+		Query query = new Query.Builder().wildcard("hel*").build();
 
 		assertThat(QueryUtils.findNodes(query, WildcardNode.class)).hasSize(1)
 			.first()
@@ -48,7 +48,7 @@ class QueryBuilderTest {
 
 	@Test
 	void testFuzzy() {
-		Query query = Query.builder().fuzzy("hello", 2).build();
+		Query query = new Query.Builder().fuzzy("hello", 2).build();
 
 		assertThat(QueryUtils.findNodes(query, FuzzyNode.class)).hasSize(1).first().satisfies(node -> {
 			assertThat(node.term()).isEqualTo("hello");
@@ -58,7 +58,7 @@ class QueryBuilderTest {
 
 	@Test
 	void testRange() {
-		Query query = Query.builder().range("1", "10").build();
+		Query query = new Query.Builder().range("1", "10").build();
 
 		assertThat(QueryUtils.findNodes(query, RangeNode.class)).hasSize(1).first().satisfies(node -> {
 			assertThat(node.start()).isEqualTo("1");
@@ -70,7 +70,7 @@ class QueryBuilderTest {
 
 	@Test
 	void testExclude() {
-		Query query = Query.builder().keyword("hello").exclude("world").build();
+		Query query = new Query.Builder().keyword("hello").exclude("world").build();
 
 		assertThat(query.extractKeywords()).containsExactly("hello");
 		assertThat(query.hasExclusions()).isTrue();
@@ -78,7 +78,7 @@ class QueryBuilderTest {
 
 	@Test
 	void testAndGroup() {
-		Query query = Query.builder().and().keyword("hello").keyword("world").endGroup().build();
+		Query query = new Query.Builder().and().keyword("hello").keyword("world").endGroup().build();
 
 		assertThat(QueryUtils.countNodesOfType(query, AndNode.class)).isEqualTo(1);
 		assertThat(query.extractKeywords()).containsExactlyInAnyOrder("hello", "world");
@@ -86,7 +86,7 @@ class QueryBuilderTest {
 
 	@Test
 	void testOrGroup() {
-		Query query = Query.builder().or().keyword("hello").keyword("world").endGroup().build();
+		Query query = new Query.Builder().or().keyword("hello").keyword("world").endGroup().build();
 
 		assertThat(QueryUtils.countNodesOfType(query, OrNode.class)).isEqualTo(1);
 		assertThat(query.extractKeywords()).containsExactlyInAnyOrder("hello", "world");
@@ -94,15 +94,14 @@ class QueryBuilderTest {
 
 	@Test
 	void testNotGroup() {
-		Query query = Query.builder().not().keyword("hello").endGroup().build();
+		Query query = new Query.Builder().not().keyword("hello").endGroup().build();
 
 		assertThat(QueryUtils.countNodesOfType(query, NotNode.class)).isEqualTo(1);
 	}
 
 	@Test
 	void testComplexQuery() {
-		Query query = Query.builder()
-			.or()
+		Query query = new Query.Builder().or()
 			.keyword("java")
 			.keyword("python")
 			.endGroup()
@@ -121,7 +120,7 @@ class QueryBuilderTest {
 
 	@Test
 	void testEmptyQuery() {
-		Query query = Query.builder().build();
+		Query query = new Query.Builder().build();
 
 		assertThat(query.isEmpty()).isTrue();
 	}

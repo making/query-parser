@@ -163,7 +163,7 @@ class LegacyCompatibilityTest {
 	@Test
 	void testLegacyVsModernComparison() {
 		// Create both parsers
-		QueryParser modernParser = QueryParser.builder().build();
+		QueryParser modernParser = QueryParser.create();
 
 		// Basic query should work in both
 		String basicQuery = "java AND spring";

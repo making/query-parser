@@ -10,7 +10,7 @@ class QueryNormalizerTest {
 
 	@Test
 	void testToLowerCase() {
-		Query query = Query.parse("HELLO World");
+		Query query = QueryParser.create().parse("HELLO World");
 		Query normalized = query.transform(QueryNormalizer.toLowerCase());
 
 		assertThat(normalized.toString()).doesNotContain("HELLO");
@@ -21,7 +21,8 @@ class QueryNormalizerTest {
 
 	@Test
 	void testToLowerCaseWithLocale() {
-		Query query = Query.parse("İstanbul"); // Turkish capital I
+		Query query = QueryParser.create().parse("İstanbul"); // Turkish capital
+																// I
 		Query normalized = query.transform(QueryNormalizer.toLowerCase(new Locale("tr", "TR")));
 
 		// Turkish lowercase of İ is i
@@ -30,7 +31,7 @@ class QueryNormalizerTest {
 
 	@Test
 	void testSortTerms() {
-		Query query = Query.parse("zebra AND apple OR banana");
+		Query query = QueryParser.create().parse("zebra AND apple OR banana");
 		Query sorted = query.transform(QueryNormalizer.sortTerms());
 
 		String result = sorted.toString();
@@ -44,7 +45,7 @@ class QueryNormalizerTest {
 
 	@Test
 	void testNormalizeWhitespace() {
-		Query query = Query.parse("\"hello   world\" AND   test");
+		Query query = QueryParser.create().parse("\"hello   world\" AND   test");
 		Query normalized = query.transform(QueryNormalizer.normalizeWhitespace());
 
 		assertThat(normalized.toString()).contains("hello world"); // Single space
@@ -53,7 +54,7 @@ class QueryNormalizerTest {
 
 	@Test
 	void testRemoveDiacritics() {
-		Query query = Query.parse("café naïve résumé");
+		Query query = QueryParser.create().parse("café naïve résumé");
 		Query normalized = query.transform(QueryNormalizer.removeDiacritics());
 
 		assertThat(normalized.toString()).contains("cafe");
@@ -63,7 +64,7 @@ class QueryNormalizerTest {
 
 	@Test
 	void testDefaultNormalizer() {
-		Query query = Query.parse("HELLO   café  WORLD");
+		Query query = QueryParser.create().parse("HELLO   café  WORLD");
 		Query normalized = query.normalize();
 
 		// Should apply lowercase, whitespace normalization, and sorting
@@ -77,7 +78,7 @@ class QueryNormalizerTest {
 			.andThen(QueryNormalizer.removeDiacritics())
 			.andThen(QueryNormalizer.sortTerms());
 
-		Query query = Query.parse("Zürich CAFÉ apple");
+		Query query = QueryParser.create().parse("Zürich CAFÉ apple");
 		Query normalized = query.transform(normalizer);
 
 		assertThat(normalized.toString()).contains("zurich");
@@ -87,7 +88,7 @@ class QueryNormalizerTest {
 
 	@Test
 	void testNormalizeComplexQuery() {
-		Query query = Query.parse("(HELLO OR world) AND \"Test  Phrase\" -EXCLUDE");
+		Query query = QueryParser.create().parse("(HELLO OR world) AND \"Test  Phrase\" -EXCLUDE");
 		Query normalized = query.normalize();
 
 		assertThat(normalized.toString()).contains("hello");
@@ -99,7 +100,7 @@ class QueryNormalizerTest {
 
 	@Test
 	void testFieldNormalization() {
-		Query query = Query.parse("title:HELLO author:\"John  Doe\"");
+		Query query = QueryParser.create().parse("title:HELLO author:\"John  Doe\"");
 		Query normalized = query.normalize();
 
 		// Field names should remain as-is, values should be normalized

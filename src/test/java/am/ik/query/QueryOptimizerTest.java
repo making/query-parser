@@ -77,7 +77,7 @@ class QueryOptimizerTest {
 
 	@Test
 	void testDefaultOptimizer() {
-		Query query = Query.parse("hello OR hello AND (world) NOT NOT java");
+		Query query = QueryParser.create().parse("hello OR hello AND (world) NOT NOT java");
 		Query optimized = query.optimize();
 
 		assertThat(optimized).isNotNull();
@@ -86,7 +86,7 @@ class QueryOptimizerTest {
 
 	@Test
 	void testOptimizeComplexQuery() {
-		Query query = Query.parse("((hello OR hello) AND world) OR (world AND java)");
+		Query query = QueryParser.create().parse("((hello OR hello) AND world) OR (world AND java)");
 		Query optimized = query.optimize();
 
 		String optimizedStr = optimized.toString();
@@ -100,7 +100,7 @@ class QueryOptimizerTest {
 			.andThen(QueryOptimizer.flattenNestedBooleans())
 			.andThen(QueryOptimizer.simplifyBooleans());
 
-		Query query = Query.parse("hello OR hello AND ((world))");
+		Query query = QueryParser.create().parse("hello OR hello AND ((world))");
 		Query optimized = query.transform(optimizer);
 
 		assertThat(optimized).isNotNull();

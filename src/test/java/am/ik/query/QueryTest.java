@@ -9,7 +9,7 @@ class QueryTest {
 
 	@Test
 	void testSimpleQuery() {
-		Query query = Query.parse("hello world");
+		Query query = QueryParser.create().parse("hello world");
 
 		assertThat(query.originalQuery()).isEqualTo("hello world");
 		assertThat(query.isEmpty()).isFalse();
@@ -22,7 +22,7 @@ class QueryTest {
 
 	@Test
 	void testPhraseQuery() {
-		Query query = Query.parse("\"hello world\"");
+		Query query = QueryParser.create().parse("\"hello world\"");
 
 		assertThat(query.isEmpty()).isFalse();
 		assertThat(query.extractPhrases()).containsExactly("hello world");
@@ -31,7 +31,7 @@ class QueryTest {
 
 	@Test
 	void testExclusionQuery() {
-		Query query = Query.parse("hello -world");
+		Query query = QueryParser.create().parse("hello -world");
 
 		assertThat(query.extractKeywords()).containsExactly("hello");
 		assertThat(query.extractExclusions()).containsExactly("world");
@@ -40,7 +40,7 @@ class QueryTest {
 
 	@Test
 	void testOrQuery() {
-		Query query = Query.parse("hello OR world");
+		Query query = QueryParser.create().parse("hello OR world");
 
 		assertThat(query.hasOrOperations()).isTrue();
 		assertThat(query.extractKeywords()).containsExactly("hello", "world");
@@ -48,7 +48,7 @@ class QueryTest {
 
 	@Test
 	void testAndQuery() {
-		Query query = Query.parse("hello AND world");
+		Query query = QueryParser.create().parse("hello AND world");
 
 		assertThat(query.hasAndOperations()).isTrue();
 		assertThat(query.extractKeywords()).containsExactly("hello", "world");
@@ -56,7 +56,7 @@ class QueryTest {
 
 	@Test
 	void testComplexQuery() {
-		Query query = Query.parse("(hello OR world) AND \"foo bar\" -baz");
+		Query query = QueryParser.create().parse("(hello OR world) AND \"foo bar\" -baz");
 
 		assertThat(query.hasOrOperations()).isTrue();
 		assertThat(query.hasAndOperations()).isTrue();
@@ -70,7 +70,7 @@ class QueryTest {
 
 	@Test
 	void testMetadata() {
-		Query query = Query.parse("hello world");
+		Query query = QueryParser.create().parse("hello world");
 		QueryMetadata metadata = query.metadata();
 
 		assertThat(metadata.tokenCount()).isGreaterThan(0);
@@ -83,7 +83,7 @@ class QueryTest {
 
 	@Test
 	void testOptimization() {
-		Query query = Query.parse("hello OR hello AND world");
+		Query query = QueryParser.create().parse("hello OR hello AND world");
 		Query optimized = query.optimize();
 
 		assertThat(optimized).isNotNull();
@@ -92,7 +92,7 @@ class QueryTest {
 
 	@Test
 	void testNormalization() {
-		Query query = Query.parse("HELLO   world");
+		Query query = QueryParser.create().parse("HELLO   world");
 		Query normalized = query.normalize();
 
 		assertThat(normalized).isNotNull();
@@ -102,7 +102,7 @@ class QueryTest {
 
 	@Test
 	void testTransformation() {
-		Query query = Query.parse("hello world");
+		Query query = QueryParser.create().parse("hello world");
 		Query transformed = query.transform(q -> {
 			Node newRoot = new RootNode();
 			return new Query(q.originalQuery(), newRoot, q.metadata());
@@ -113,7 +113,7 @@ class QueryTest {
 
 	@Test
 	void testValidation() {
-		Query query = Query.parse("hello world");
+		Query query = QueryParser.create().parse("hello world");
 		ValidationResult result = query.validate();
 
 		assertThat(result.isValid()).isTrue();
@@ -122,7 +122,7 @@ class QueryTest {
 
 	@Test
 	void testInvalidQuery() {
-		Query query = Query.parse(""); // Empty query
+		Query query = QueryParser.create().parse(""); // Empty query
 		ValidationResult result = query.validate();
 
 		assertThat(result.isValid()).isFalse();
@@ -131,7 +131,7 @@ class QueryTest {
 
 	@Test
 	void testWalk() {
-		Query query = Query.parse("hello world");
+		Query query = QueryParser.create().parse("hello world");
 		int[] count = { 0 };
 
 		query.walk(node -> count[0]++);
@@ -141,7 +141,7 @@ class QueryTest {
 
 	@Test
 	void testAcceptVisitor() {
-		Query query = Query.parse("hello");
+		Query query = QueryParser.create().parse("hello");
 
 		String result = query.accept(new BaseNodeVisitor<String>() {
 			@Override
@@ -165,7 +165,7 @@ class QueryTest {
 
 	@Test
 	void testToString() {
-		Query query = Query.parse("hello AND world");
+		Query query = QueryParser.create().parse("hello AND world");
 		String str = query.toString();
 
 		assertThat(str).contains("hello");
@@ -175,7 +175,7 @@ class QueryTest {
 
 	@Test
 	void testPrettyPrint() {
-		Query query = Query.parse("hello world");
+		Query query = QueryParser.create().parse("hello world");
 		String pretty = query.toPrettyString();
 
 		assertThat(pretty).contains("Query:");
@@ -185,7 +185,7 @@ class QueryTest {
 
 	@Test
 	void testFieldQuery() {
-		Query query = Query.parse("title:hello");
+		Query query = QueryParser.create().parse("title:hello");
 
 		assertThat(query.isEmpty()).isFalse();
 		assertThat(QueryUtils.countNodesOfType(query, FieldNode.class)).isEqualTo(1);
@@ -193,7 +193,7 @@ class QueryTest {
 
 	@Test
 	void testWildcardQuery() {
-		Query query = Query.parse("hel*");
+		Query query = QueryParser.create().parse("hel*");
 
 		assertThat(query.isEmpty()).isFalse();
 		assertThat(QueryUtils.countNodesOfType(query, WildcardNode.class)).isEqualTo(1);
@@ -201,7 +201,7 @@ class QueryTest {
 
 	@Test
 	void testFuzzyQuery() {
-		Query query = Query.parse("hello~2");
+		Query query = QueryParser.create().parse("hello~2");
 
 		assertThat(query.isEmpty()).isFalse();
 		assertThat(QueryUtils.countNodesOfType(query, FuzzyNode.class)).isEqualTo(1);
@@ -209,7 +209,7 @@ class QueryTest {
 
 	@Test
 	void testRangeQuery() {
-		Query query = Query.parse("[1 TO 10]");
+		Query query = QueryParser.create().parse("[1 TO 10]");
 
 		assertThat(query.isEmpty()).isFalse();
 		assertThat(QueryUtils.countNodesOfType(query, RangeNode.class)).isEqualTo(1);
@@ -217,7 +217,7 @@ class QueryTest {
 
 	@Test
 	void testNullQuery() {
-		assertThatThrownBy(() -> Query.parse(null)).isInstanceOf(IllegalArgumentException.class);
+		assertThatThrownBy(() -> QueryParser.create().parse(null)).isInstanceOf(IllegalArgumentException.class);
 	}
 
 }

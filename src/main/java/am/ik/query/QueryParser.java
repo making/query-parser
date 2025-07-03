@@ -408,6 +408,14 @@ public final class QueryParser {
 	}
 
 	/**
+	 * Creates a new QueryParser with default settings.
+	 * @return a new QueryParser instance
+	 */
+	public static QueryParser create() {
+		return builder().build();
+	}
+
+	/**
 	 * Parses a query using default settings (backward compatibility).
 	 * @param query the query string to parse
 	 * @return the root node of the parsed query

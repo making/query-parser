@@ -15,7 +15,7 @@ class BlogSearchSqlConverterTest {
 
 	@Test
 	void testSimpleKeywordSearch() {
-		Query query = Query.parse("spring");
+		Query query = QueryParser.create().parse("spring");
 
 		String sql = convertToSqlWhere(query);
 
@@ -24,7 +24,7 @@ class BlogSearchSqlConverterTest {
 
 	@Test
 	void testMultipleKeywords() {
-		Query query = Query.parse("spring boot");
+		Query query = QueryParser.create().parse("spring boot");
 
 		String sql = convertToSqlWhere(query);
 
@@ -34,7 +34,7 @@ class BlogSearchSqlConverterTest {
 
 	@Test
 	void testExplicitAndOrOperators() {
-		Query query = Query.parse("java AND spring OR kotlin");
+		Query query = QueryParser.create().parse("java AND spring OR kotlin");
 
 		String sql = convertToSqlWhere(query);
 
@@ -47,7 +47,7 @@ class BlogSearchSqlConverterTest {
 
 	@Test
 	void testPhraseSearch() {
-		Query query = Query.parse("\"Spring Boot Framework\"");
+		Query query = QueryParser.create().parse("\"Spring Boot Framework\"");
 
 		String sql = convertToSqlWhere(query);
 
@@ -57,7 +57,7 @@ class BlogSearchSqlConverterTest {
 
 	@Test
 	void testFieldSpecificSearch() {
-		Query query = Query.parse("title:spring author:john");
+		Query query = QueryParser.create().parse("title:spring author:john");
 
 		String sql = convertToSqlWhere(query);
 
@@ -66,7 +66,7 @@ class BlogSearchSqlConverterTest {
 
 	@Test
 	void testFieldWithPhrase() {
-		Query query = Query.parse("title:\"Spring Boot Tutorial\"");
+		Query query = QueryParser.create().parse("title:\"Spring Boot Tutorial\"");
 
 		String sql = convertToSqlWhere(query);
 
@@ -75,7 +75,7 @@ class BlogSearchSqlConverterTest {
 
 	@Test
 	void testExclusions() {
-		Query query = Query.parse("spring -deprecated");
+		Query query = QueryParser.create().parse("spring -deprecated");
 
 		String sql = convertToSqlWhere(query);
 
@@ -85,7 +85,7 @@ class BlogSearchSqlConverterTest {
 
 	@Test
 	void testWildcardSearch() {
-		Query query = Query.parse("spring*");
+		Query query = QueryParser.create().parse("spring*");
 
 		String sql = convertToSqlWhere(query);
 
@@ -98,7 +98,7 @@ class BlogSearchSqlConverterTest {
 		// Note: Range queries with field prefixes are not fully supported in the current
 		// parser
 		// This test demonstrates a simple date search instead
-		Query query = Query.parse("created_date:2024");
+		Query query = QueryParser.create().parse("created_date:2024");
 
 		String sql = convertToSqlWhere(query);
 
@@ -107,7 +107,7 @@ class BlogSearchSqlConverterTest {
 
 	@Test
 	void testCategorySearch() {
-		Query query = Query.parse("category:programming status:published");
+		Query query = QueryParser.create().parse("category:programming status:published");
 
 		String sql = convertToSqlWhere(query);
 
@@ -116,7 +116,9 @@ class BlogSearchSqlConverterTest {
 
 	@Test
 	void testComplexBlogSearch() {
-		Query query = Query.parse("(java OR kotlin) AND title:\"tutorial\" AND category:programming AND -deprecated");
+		Query query = QueryParser.builder()
+			.build()
+			.parse("(java OR kotlin) AND title:\"tutorial\" AND category:programming AND -deprecated");
 
 		String sql = convertToSqlWhere(query);
 
@@ -130,7 +132,7 @@ class BlogSearchSqlConverterTest {
 
 	@Test
 	void testEmptyQuery() {
-		Query query = Query.parse("");
+		Query query = QueryParser.create().parse("");
 
 		String sql = convertToSqlWhere(query);
 
@@ -139,7 +141,7 @@ class BlogSearchSqlConverterTest {
 
 	@Test
 	void testOnlyExclusions() {
-		Query query = Query.parse("-deprecated -draft");
+		Query query = QueryParser.create().parse("-deprecated -draft");
 
 		String sql = convertToSqlWhere(query);
 
@@ -340,7 +342,7 @@ class BlogSearchSqlConverterTest {
 	 */
 	@Test
 	void testParameterizedQuery() {
-		Query query = Query.parse("title:spring author:john");
+		Query query = QueryParser.create().parse("title:spring author:john");
 
 		SqlParameterizedResult result = convertToParameterizedSql(query);
 

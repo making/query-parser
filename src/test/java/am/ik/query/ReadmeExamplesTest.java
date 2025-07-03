@@ -17,7 +17,7 @@ class ReadmeExamplesTest {
 	@Test
 	void testBasicUsage() {
 		// Parse a simple query
-		Query query = Query.parse("java AND (spring OR boot)");
+		Query query = QueryParser.create().parse("java AND (spring OR boot)");
 
 		// Extract keywords
 		List<String> keywords = query.extractKeywords();
@@ -47,61 +47,61 @@ class ReadmeExamplesTest {
 	@Test
 	void testBooleanOperators() {
 		// Explicit operators
-		Query q1 = Query.parse("java AND spring");
+		Query q1 = QueryParser.create().parse("java AND spring");
 		assertThat(q1.hasAndOperations()).isTrue();
 
-		Query q2 = Query.parse("java OR kotlin");
+		Query q2 = QueryParser.create().parse("java OR kotlin");
 		assertThat(q2.hasOrOperations()).isTrue();
 
 		// Complex boolean expressions
-		Query q3 = Query.parse("(java OR kotlin) AND spring");
+		Query q3 = QueryParser.create().parse("(java OR kotlin) AND spring");
 		assertThat(q3.extractKeywords()).containsExactlyInAnyOrder("java", "kotlin", "spring");
 	}
 
 	@Test
 	void testPhrases() {
 		// Exact phrase matching
-		Query q1 = Query.parse("\"hello world\"");
+		Query q1 = QueryParser.create().parse("\"hello world\"");
 		assertThat(q1.extractPhrases()).containsExactly("hello world");
 
 		// Multiple phrases
-		Query q2 = Query.parse("\"Spring Boot\" AND \"Java Framework\"");
+		Query q2 = QueryParser.create().parse("\"Spring Boot\" AND \"Java Framework\"");
 		assertThat(q2.extractPhrases()).containsExactlyInAnyOrder("Spring Boot", "Java Framework");
 	}
 
 	@Test
 	void testWildcards() {
 		// Wildcards
-		Query q1 = Query.parse("spr?ng");
+		Query q1 = QueryParser.create().parse("spr?ng");
 		assertThat(q1.extractWildcards()).containsExactly("spr?ng");
 
-		Query q2 = Query.parse("spring*");
+		Query q2 = QueryParser.create().parse("spring*");
 		assertThat(q2.extractWildcards()).containsExactly("spring*");
 
-		Query q3 = Query.parse("*boot*");
+		Query q3 = QueryParser.create().parse("*boot*");
 		assertThat(q3.extractWildcards()).containsExactly("*boot*");
 	}
 
 	@Test
 	void testFuzzySearch() {
 		// Fuzzy search
-		Query q1 = Query.parse("spring~");
+		Query q1 = QueryParser.create().parse("spring~");
 		assertThat(q1.toString()).contains("spring~");
 
-		Query q2 = Query.parse("spring~1");
+		Query q2 = QueryParser.create().parse("spring~1");
 		assertThat(q2.toString()).contains("spring~1");
 	}
 
 	@Test
 	void testFieldQueries() {
 		// Field-specific search
-		Query q1 = Query.parse("title:spring");
+		Query q1 = QueryParser.create().parse("title:spring");
 		assertThat(q1.extractFields().get("title")).containsExactly("spring");
 
-		Query q2 = Query.parse("author:\"John Doe\"");
+		Query q2 = QueryParser.create().parse("author:\"John Doe\"");
 		assertThat(q2.extractFields().get("author")).containsExactly("John Doe");
 
-		Query q3 = Query.parse("date:2024 AND status:published");
+		Query q3 = QueryParser.create().parse("date:2024 AND status:published");
 		assertThat(q3.extractFields().get("date")).containsExactly("2024");
 		assertThat(q3.extractFields().get("status")).containsExactly("published");
 	}
@@ -109,31 +109,31 @@ class ReadmeExamplesTest {
 	@Test
 	void testRangeQueries() {
 		// Basic ranges (without field prefixes)
-		Query q1 = Query.parse("[1 TO 10]");
+		Query q1 = QueryParser.create().parse("[1 TO 10]");
 		assertThat(q1.toString()).contains("[1 TO 10]");
 
-		Query q2 = Query.parse("{1 TO 10}");
+		Query q2 = QueryParser.create().parse("{1 TO 10}");
 		assertThat(q2.toString()).contains("{1 TO 10}");
 
-		Query q3 = Query.parse("[1 TO 10}");
+		Query q3 = QueryParser.create().parse("[1 TO 10}");
 		assertThat(q3.toString()).contains("[1 TO 10}");
 	}
 
 	@Test
 	void testExclusions() {
 		// Exclude terms
-		Query q1 = Query.parse("java -android");
+		Query q1 = QueryParser.create().parse("java -android");
 		assertThat(q1.extractKeywords()).containsExactly("java");
 		assertThat(q1.extractExclusions()).containsExactly("android");
 
-		Query q2 = Query.parse("spring -legacy -deprecated");
+		Query q2 = QueryParser.create().parse("spring -legacy -deprecated");
 		assertThat(q2.extractKeywords()).containsExactly("spring");
 		assertThat(q2.extractExclusions()).containsExactlyInAnyOrder("legacy", "deprecated");
 	}
 
 	@Test
 	void testQueryTraversal() {
-		Query query = Query.parse("java AND (spring OR boot)");
+		Query query = QueryParser.create().parse("java AND (spring OR boot)");
 
 		// Walk through all nodes
 		AtomicInteger nodeCount = new AtomicInteger(0);
@@ -204,7 +204,7 @@ class ReadmeExamplesTest {
 
 	@Test
 	void testQueryTransformation() {
-		Query query = Query.parse("HELLO AND WORLD");
+		Query query = QueryParser.create().parse("HELLO AND WORLD");
 
 		// Normalize query (lowercase, sort terms, normalize whitespace)
 		Query normalized = query.normalize();
@@ -240,7 +240,7 @@ class ReadmeExamplesTest {
 
 	@Test
 	void testQueryAnalysis() {
-		Query query = Query.parse("\"Spring Boot\" AND (java OR kotlin) -deprecated");
+		Query query = QueryParser.create().parse("\"Spring Boot\" AND (java OR kotlin) -deprecated");
 
 		// Extract different components
 		List<String> keywords = query.extractKeywords();
@@ -267,7 +267,7 @@ class ReadmeExamplesTest {
 	@Test
 	void testThreadSafety() {
 		// QueryParser instances are thread-safe
-		QueryParser parser = QueryParser.builder().build();
+		QueryParser parser = QueryParser.create();
 
 		// Simulate multiple threads
 		List<Thread> threads = List.of(new Thread(() -> {
@@ -289,7 +289,7 @@ class ReadmeExamplesTest {
 		});
 
 		// Query objects are immutable
-		Query query = Query.parse("ORIGINAL");
+		Query query = QueryParser.create().parse("ORIGINAL");
 		Query transformed = query.normalize();
 		assertThat(transformed.toString()).contains("original"); // lowercase
 	}
@@ -299,7 +299,7 @@ class ReadmeExamplesTest {
 		// Test a simplified complex query
 		String complexQuery = "(java OR kotlin) AND -deprecated -legacy";
 
-		Query query = Query.parse(complexQuery);
+		Query query = QueryParser.create().parse(complexQuery);
 
 		// Verify it parses without error
 		assertThat(query).isNotNull();
