@@ -6,9 +6,9 @@
 
 	<groupId>am.ik.query</groupId>
 	<artifactId>query-parser</artifactId>
-	<version>0.1.2-SNAPSHOT</version>
+	<version>0.2.0-SNAPSHOT</version>
 	<name>query-parser</name>
-	<description>A Java library template</description>
+	<description>A powerful and flexible query parsing library for Java that transforms search queries into structured Abstract Syntax Trees (AST) with support for boolean operators, phrases, wildcards, fuzzy search, field queries, and more</description>
 
 	<properties>
 		<java.version>17</java.version>
@@ -69,6 +69,7 @@
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-compiler-plugin</artifactId>
 				<version>3.13.0</version>
+                                <!--
 				<configuration>
 					<compilerArgs>
 						<arg>-XDcompilePolicy=simple</arg>
@@ -90,6 +91,7 @@
 						</path>
 					</annotationProcessorPaths>
 				</configuration>
+                                -->
 			</plugin>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
