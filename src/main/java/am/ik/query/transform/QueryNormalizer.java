@@ -5,7 +5,6 @@ import java.util.List;
 import java.util.Locale;
 
 import am.ik.query.Query;
-import am.ik.query.QueryMetadata;
 import am.ik.query.ast.AndNode;
 import am.ik.query.ast.FieldNode;
 import am.ik.query.ast.FuzzyNode;

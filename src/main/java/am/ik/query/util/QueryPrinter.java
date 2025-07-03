@@ -31,8 +31,6 @@ public class QueryPrinter {
 		pw.println("Query: " + query.originalQuery());
 		pw.println("AST:");
 		printNode(query.rootNode(), pw, 0);
-		pw.println();
-		pw.println("Metadata: " + query.metadata());
 		return sw.toString();
 	}
 

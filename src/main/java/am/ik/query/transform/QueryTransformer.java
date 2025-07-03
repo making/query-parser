@@ -43,7 +43,7 @@ public interface QueryTransformer extends Function<Query, Query> {
 	static QueryTransformer fromVisitor(NodeVisitor<Node> visitor) {
 		return query -> {
 			Node transformedRoot = query.rootNode().accept(visitor);
-			return new Query(query.originalQuery(), transformedRoot, query.metadata());
+			return new Query(query.originalQuery(), transformedRoot);
 		};
 	}
 

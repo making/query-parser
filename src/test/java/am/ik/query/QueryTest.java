@@ -83,19 +83,6 @@ class QueryTest {
 	}
 
 	@Test
-	void testMetadata() {
-		Query query = QueryParser.create().parse("hello world");
-		QueryMetadata metadata = query.metadata();
-
-		assertThat(metadata.tokenCount()).isGreaterThan(0);
-		assertThat(metadata.nodeCount()).isGreaterThan(0);
-		assertThat(metadata.maxDepth()).isGreaterThan(0);
-		assertThat(metadata.parseTimeNanos()).isGreaterThan(0);
-		assertThat(metadata.parseTimeMillis()).isGreaterThan(0);
-		assertThat(metadata.parsedAt()).isNotNull();
-	}
-
-	@Test
 	void testOptimization() {
 		Query query = QueryParser.create().parse("hello OR hello AND world");
 		Query optimized = query.transform(QueryOptimizer.defaultOptimizer());
@@ -119,7 +106,7 @@ class QueryTest {
 		Query query = QueryParser.create().parse("hello world");
 		Query transformed = query.transform(q -> {
 			Node newRoot = new RootNode();
-			return new Query(q.originalQuery(), newRoot, q.metadata());
+			return new Query(q.originalQuery(), newRoot);
 		});
 
 		assertThat(transformed.isEmpty()).isTrue();

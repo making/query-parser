@@ -36,12 +36,9 @@ public final class Query {
 
 	private final Node rootNode;
 
-	private final QueryMetadata metadata;
-
-	public Query(String originalQuery, Node rootNode, QueryMetadata metadata) {
+	public Query(String originalQuery, Node rootNode) {
 		this.originalQuery = Objects.requireNonNull(originalQuery, "originalQuery must not be null");
 		this.rootNode = Objects.requireNonNull(rootNode, "rootNode must not be null");
-		this.metadata = Objects.requireNonNull(metadata, "metadata must not be null");
 	}
 
 	/**
@@ -58,14 +55,6 @@ public final class Query {
 	 */
 	public Node rootNode() {
 		return rootNode;
-	}
-
-	/**
-	 * Gets the query metadata.
-	 * @return the query metadata
-	 */
-	public QueryMetadata metadata() {
-		return metadata;
 	}
 
 	/**

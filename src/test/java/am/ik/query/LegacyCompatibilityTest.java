@@ -184,15 +184,13 @@ class LegacyCompatibilityTest {
 	}
 
 	@Test
-	void testLegacyCompatibleParserMetadata() {
-		// Even in legacy mode, metadata should be available
+	void testLegacyCompatibleParserBasics() {
+		// Legacy mode should work without metadata
 		Query query = legacyCompatibleParser.parse("hello world");
-		QueryMetadata metadata = query.metadata();
 
-		assertThat(metadata.tokenCount()).isGreaterThan(0);
-		assertThat(metadata.nodeCount()).isGreaterThan(0);
-		assertThat(metadata.maxDepth()).isGreaterThan(0);
-		assertThat(metadata.parseTime()).isNotNull();
+		assertThat(query.originalQuery()).isEqualTo("hello world");
+		assertThat(query.rootNode()).isNotNull();
+		assertThat(query.isEmpty()).isFalse();
 	}
 
 	@Test

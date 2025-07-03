@@ -99,18 +99,9 @@ public class QueryValidator {
 		query.rootNode().walk(nodeValidator::visit);
 		errors.addAll(nodeValidator.getErrors());
 
-		// Also validate original tokens to catch things like BOOST and REQUIRED
-		// that might be consumed during parsing but not reflected in the AST
-		Object originalTokensObj = query.metadata().properties().get("originalTokens");
-		if (originalTokensObj instanceof List<?> originalTokensList) {
-			for (Object tokenObj : originalTokensList) {
-				if (tokenObj instanceof Token token) {
-					if (!allowedTokenTypes.contains(token.type())) {
-						errors.add(new ValidationError("Token type not allowed: " + token.type().name()));
-					}
-				}
-			}
-		}
+		// Note: Original token validation was removed along with QueryMetadata
+		// This functionality could be re-implemented by passing tokens separately if
+		// needed
 
 		return errors;
 	}

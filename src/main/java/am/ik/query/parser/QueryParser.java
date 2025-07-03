@@ -14,7 +14,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import am.ik.query.Query;
-import am.ik.query.QueryMetadata;
 import am.ik.query.ast.AndNode;
 import am.ik.query.ast.FieldNode;
 import am.ik.query.ast.FuzzyNode;
@@ -84,18 +83,7 @@ public final class QueryParser {
 			// Parse
 			Node rootNode = parseQuery();
 
-			// Calculate metadata
-			long parseTime = System.nanoTime() - startTime;
-			QueryMetadata metadata = QueryMetadata.builder()
-				.tokenCount(tokens.size())
-				.nodeCount(countNodes(rootNode))
-				.maxDepth(calculateMaxDepth(rootNode))
-				.parseTimeNanos(parseTime)
-				.parsedAt(parsedAt)
-				.property("originalTokens", tokens)
-				.build();
-
-			Query query = new Query(queryString, rootNode, metadata);
+			Query query = new Query(queryString, rootNode);
 
 			// Validate if enabled
 			if (options.validateAfterParse()) {

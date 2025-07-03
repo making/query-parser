@@ -3,7 +3,6 @@ package am.ik.query.parser;
 import java.util.List;
 
 import am.ik.query.Query;
-import am.ik.query.QueryMetadata;
 import am.ik.query.ast.RootNode;
 import am.ik.query.ast.TokenNode;
 import am.ik.query.lexer.LegacyQueryLexer;

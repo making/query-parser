@@ -33,7 +33,7 @@ class QueryValidatorTest {
 	void testEmptyGroup() {
 		// Manually create empty group
 		Node emptyAnd = new AndNode(java.util.List.of());
-		Query query = new Query("test", emptyAnd, QueryMetadata.builder().build());
+		Query query = new Query("test", emptyAnd);
 		ValidationResult result = QueryValidator.validate(query);
 
 		assertThat(result.isValid()).isFalse();
@@ -61,7 +61,7 @@ class QueryValidatorTest {
 	@Test
 	void testEmptyFieldName() {
 		FieldNode field = new FieldNode("", "value");
-		Query query = new Query("test", field, QueryMetadata.builder().build());
+		Query query = new Query("test", field);
 		ValidationResult result = QueryValidator.validate(query);
 
 		assertThat(result.isValid()).isFalse();
@@ -71,7 +71,7 @@ class QueryValidatorTest {
 	@Test
 	void testEmptyFieldValue() {
 		FieldNode field = new FieldNode("title", "");
-		Query query = new Query("test", field, QueryMetadata.builder().build());
+		Query query = new Query("test", field);
 		ValidationResult result = QueryValidator.validate(query);
 
 		assertThat(result.isValid()).isFalse();
@@ -90,7 +90,7 @@ class QueryValidatorTest {
 	@Test
 	void testSameRangeBoundaries() {
 		RangeNode range = RangeNode.builder().start("5").end("5").build();
-		Query query = new Query("test", range, QueryMetadata.builder().build());
+		Query query = new Query("test", range);
 		ValidationResult result = QueryValidator.validate(query);
 
 		assertThat(result.isValid()).isFalse();
@@ -100,7 +100,7 @@ class QueryValidatorTest {
 	@Test
 	void testWildcardRange() {
 		RangeNode range = RangeNode.builder().start("*").end("*").build();
-		Query query = new Query("test", range, QueryMetadata.builder().build());
+		Query query = new Query("test", range);
 		ValidationResult result = QueryValidator.validate(query);
 
 		assertThat(result.isValid()).isFalse();
@@ -134,7 +134,7 @@ class QueryValidatorTest {
 						new FieldNode("", "value") // Empty field name
 				));
 
-		Query query = new Query("test", root, QueryMetadata.builder().build());
+		Query query = new Query("test", root);
 		ValidationResult result = QueryValidator.validate(query);
 
 		assertThat(result.isValid()).isFalse();

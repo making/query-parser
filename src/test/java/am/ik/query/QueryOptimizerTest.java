@@ -12,7 +12,7 @@ class QueryOptimizerTest {
 		Node orNode = new OrNode(
 				java.util.List.of(new TokenNode(TokenType.KEYWORD, "hello"), new TokenNode(TokenType.KEYWORD, "hello"),
 						new TokenNode(TokenType.KEYWORD, "world"), new TokenNode(TokenType.KEYWORD, "world")));
-		Query query = new Query("test", orNode, QueryMetadata.builder().build());
+		Query query = new Query("test", orNode);
 		Query optimized = query.transform(QueryOptimizer.removeDuplicates());
 
 		// Should remove duplicate "hello" and "world" within the OR group
@@ -29,7 +29,7 @@ class QueryOptimizerTest {
 				java.util.List.of(new TokenNode(TokenType.KEYWORD, "b"), new TokenNode(TokenType.KEYWORD, "c")));
 		Node outer = new AndNode(java.util.List.of(new TokenNode(TokenType.KEYWORD, "a"), inner));
 
-		Query query = new Query("test", outer, QueryMetadata.builder().build());
+		Query query = new Query("test", outer);
 		Query flattened = query.transform(QueryOptimizer.flattenNestedBooleans());
 
 		// Should flatten to single AND with three children
@@ -41,7 +41,7 @@ class QueryOptimizerTest {
 	void testSimplifyBooleans() {
 		// Single child AND/OR should be simplified
 		Node singleAnd = new AndNode(java.util.List.of(new TokenNode(TokenType.KEYWORD, "hello")));
-		Query query = new Query("test", singleAnd, QueryMetadata.builder().build());
+		Query query = new Query("test", singleAnd);
 		Query simplified = query.transform(QueryOptimizer.simplifyBooleans());
 
 		assertThat(simplified.rootNode()).isInstanceOf(TokenNode.class);
@@ -51,7 +51,7 @@ class QueryOptimizerTest {
 	void testDoubleNegation() {
 		// NOT(NOT(x)) should become x
 		Node doubleNot = new NotNode(new NotNode(new TokenNode(TokenType.KEYWORD, "hello")));
-		Query query = new Query("test", doubleNot, QueryMetadata.builder().build());
+		Query query = new Query("test", doubleNot);
 		Query simplified = query.transform(QueryOptimizer.simplifyBooleans());
 
 		assertThat(simplified.rootNode()).isInstanceOf(TokenNode.class);
@@ -67,7 +67,7 @@ class QueryOptimizerTest {
 																												// group
 				));
 
-		Query query = new Query("test", root, QueryMetadata.builder().build());
+		Query query = new Query("test", root);
 		Query cleaned = query.transform(QueryOptimizer.removeEmptyGroups());
 
 		// Empty group should be removed

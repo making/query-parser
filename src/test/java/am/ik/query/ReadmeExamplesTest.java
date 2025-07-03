@@ -256,12 +256,10 @@ class ReadmeExamplesTest {
 
 		// Fields were removed from this test due to parsing complexity
 
-		// Get metadata
-		QueryMetadata metadata = query.metadata();
-		assertThat(metadata.tokenCount()).isGreaterThan(0);
-		assertThat(metadata.nodeCount()).isGreaterThan(0);
-		assertThat(metadata.maxDepth()).isGreaterThan(0);
-		assertThat(metadata.parseTime()).isNotNull();
+		// Verify basic query properties
+		assertThat(query.originalQuery()).isEqualTo("java AND (spring OR \"machine learning\") -deprecated");
+		assertThat(query.rootNode()).isNotNull();
+		assertThat(query.isEmpty()).isFalse();
 	}
 
 	@Test
