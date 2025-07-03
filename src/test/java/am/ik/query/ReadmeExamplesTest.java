@@ -228,7 +228,7 @@ class ReadmeExamplesTest {
 		QueryParser parser = QueryParser.builder().validateAfterParse(false).build();
 		Query query = parser.parse("");
 
-		ValidationResult result = query.validate();
+		ValidationResult result = QueryValidator.validate(query);
 
 		if (!result.isValid()) {
 			assertThat(result.errors()).isNotEmpty();

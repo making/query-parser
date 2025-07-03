@@ -234,7 +234,7 @@ QueryParser performanceParser = QueryParser.builder()
 QueryParser parser = QueryParser.builder().validateAfterParse(false).build();
 Query query = parser.parse("hello");  // Simple valid query
 
-ValidationResult result = query.validate();
+ValidationResult result = QueryValidator.validate(query);
 
 if (!result.isValid()) {
     result.errors().forEach(error -> {

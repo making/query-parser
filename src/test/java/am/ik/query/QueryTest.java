@@ -114,7 +114,7 @@ class QueryTest {
 	@Test
 	void testValidation() {
 		Query query = QueryParser.create().parse("hello world");
-		ValidationResult result = query.validate();
+		ValidationResult result = QueryValidator.validate(query);
 
 		assertThat(result.isValid()).isTrue();
 		assertThat(result.errors()).isEmpty();
@@ -123,7 +123,7 @@ class QueryTest {
 	@Test
 	void testInvalidQuery() {
 		Query query = QueryParser.create().parse(""); // Empty query
-		ValidationResult result = query.validate();
+		ValidationResult result = QueryValidator.validate(query);
 
 		assertThat(result.isValid()).isFalse();
 		assertThat(result.errors()).isNotEmpty();

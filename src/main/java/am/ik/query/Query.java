@@ -104,14 +104,6 @@ public final class Query {
 	}
 
 	/**
-	 * Validates this query and returns validation results.
-	 * @return the validation result
-	 */
-	public ValidationResult validate() {
-		return QueryValidator.validate(this);
-	}
-
-	/**
 	 * Extracts all tokens of the specified type.
 	 * @param tokenType the token type to extract
 	 * @return list of matching tokens

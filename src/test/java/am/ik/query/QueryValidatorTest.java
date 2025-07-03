@@ -10,7 +10,7 @@ class QueryValidatorTest {
 	@Test
 	void testValidQuery() {
 		Query query = QueryParser.create().parse("hello world");
-		ValidationResult result = query.validate();
+		ValidationResult result = QueryValidator.validate(query);
 
 		assertThat(result.isValid()).isTrue();
 		assertThat(result.errors()).isEmpty();
@@ -19,7 +19,7 @@ class QueryValidatorTest {
 	@Test
 	void testEmptyQuery() {
 		Query query = QueryParser.create().parse("");
-		ValidationResult result = query.validate();
+		ValidationResult result = QueryValidator.validate(query);
 
 		assertThat(result.isValid()).isFalse();
 		// An empty query has both "Query is empty" and "Empty group node: RootNode"
@@ -34,7 +34,7 @@ class QueryValidatorTest {
 		// Manually create empty group
 		Node emptyAnd = new AndNode(java.util.List.of());
 		Query query = new Query("test", emptyAnd, QueryMetadata.builder().build());
-		ValidationResult result = query.validate();
+		ValidationResult result = QueryValidator.validate(query);
 
 		assertThat(result.isValid()).isFalse();
 		assertThat(result.errors()).anySatisfy(error -> assertThat(error.message()).contains("Empty group"));
@@ -43,7 +43,7 @@ class QueryValidatorTest {
 	@Test
 	void testConflictingTerms() {
 		Query query = QueryParser.create().parse("hello AND -hello");
-		ValidationResult result = query.validate();
+		ValidationResult result = QueryValidator.validate(query);
 
 		assertThat(result.isValid()).isFalse();
 		assertThat(result.errors()).anySatisfy(error -> assertThat(error.message()).contains("conflicting"));
@@ -52,7 +52,7 @@ class QueryValidatorTest {
 	@Test
 	void testAllNegativeOr() {
 		Query query = QueryParser.create().parse("-hello OR -world");
-		ValidationResult result = query.validate();
+		ValidationResult result = QueryValidator.validate(query);
 
 		assertThat(result.isValid()).isFalse();
 		assertThat(result.errors()).anySatisfy(error -> assertThat(error.message()).contains("only negative"));
@@ -62,7 +62,7 @@ class QueryValidatorTest {
 	void testEmptyFieldName() {
 		FieldNode field = new FieldNode("", "value");
 		Query query = new Query("test", field, QueryMetadata.builder().build());
-		ValidationResult result = query.validate();
+		ValidationResult result = QueryValidator.validate(query);
 
 		assertThat(result.isValid()).isFalse();
 		assertThat(result.errors()).anySatisfy(error -> assertThat(error.message()).contains("Empty field name"));
@@ -72,7 +72,7 @@ class QueryValidatorTest {
 	void testEmptyFieldValue() {
 		FieldNode field = new FieldNode("title", "");
 		Query query = new Query("test", field, QueryMetadata.builder().build());
-		ValidationResult result = query.validate();
+		ValidationResult result = QueryValidator.validate(query);
 
 		assertThat(result.isValid()).isFalse();
 		assertThat(result.errors()).anySatisfy(error -> assertThat(error.message()).contains("Empty field value"));
@@ -81,7 +81,7 @@ class QueryValidatorTest {
 	@Test
 	void testShortFuzzyTerm() {
 		Query query = QueryParser.create().parse("ab~2");
-		ValidationResult result = query.validate();
+		ValidationResult result = QueryValidator.validate(query);
 
 		assertThat(result.isValid()).isFalse();
 		assertThat(result.errors()).anySatisfy(error -> assertThat(error.message()).contains("too short"));
@@ -91,7 +91,7 @@ class QueryValidatorTest {
 	void testSameRangeBoundaries() {
 		RangeNode range = RangeNode.builder().start("5").end("5").build();
 		Query query = new Query("test", range, QueryMetadata.builder().build());
-		ValidationResult result = query.validate();
+		ValidationResult result = QueryValidator.validate(query);
 
 		assertThat(result.isValid()).isFalse();
 		assertThat(result.errors()).anySatisfy(error -> assertThat(error.message()).contains("same"));
@@ -101,7 +101,7 @@ class QueryValidatorTest {
 	void testWildcardRange() {
 		RangeNode range = RangeNode.builder().start("*").end("*").build();
 		Query query = new Query("test", range, QueryMetadata.builder().build());
-		ValidationResult result = query.validate();
+		ValidationResult result = QueryValidator.validate(query);
 
 		assertThat(result.isValid()).isFalse();
 		assertThat(result.errors()).anySatisfy(error -> assertThat(error.message()).contains("matches everything"));
@@ -110,7 +110,7 @@ class QueryValidatorTest {
 	@Test
 	void testThrowIfInvalid() {
 		Query query = QueryParser.create().parse("");
-		ValidationResult result = query.validate();
+		ValidationResult result = QueryValidator.validate(query);
 
 		assertThatThrownBy(() -> result.throwIfInvalid()).isInstanceOf(QueryValidationException.class);
 	}
@@ -135,7 +135,7 @@ class QueryValidatorTest {
 				));
 
 		Query query = new Query("test", root, QueryMetadata.builder().build());
-		ValidationResult result = query.validate();
+		ValidationResult result = QueryValidator.validate(query);
 
 		assertThat(result.isValid()).isFalse();
 		assertThat(result.errors()).hasSizeGreaterThan(1);
