@@ -73,13 +73,35 @@ Query query = parser.parse("java spring boot");  // Interpreted as: java AND spr
 // Explicit operators
 QueryParser.create().parse("java AND spring");
 QueryParser.create().parse("java OR kotlin");
-QueryParser.create().parse("java NOT android");  // NOT creates exclusions (same as -)
 
 // Implicit AND (default behavior)
 QueryParser.create().parse("java spring");  // Same as: java AND spring
 
 // Complex boolean expressions
-QueryParser.create().parse("(java OR kotlin) AND (spring OR boot) NOT legacy");
+QueryParser.create().parse("(java OR kotlin) AND (spring OR boot)");
+```
+
+### Negation: NOT vs - (Exclusion)
+
+There are two ways to exclude terms, with important differences:
+
+```java
+// Method 1: NOT operator (can negate complex expressions)
+QueryParser.create().parse("java NOT android");              // Single term negation
+QueryParser.create().parse("java NOT (android OR ios)");     // Group negation - excludes documents containing EITHER android OR ios
+QueryParser.create().parse("java NOT \"mobile development\""); // Phrase negation
+
+// Method 2: - prefix (excludes individual terms only)
+QueryParser.create().parse("java -android");                 // Single term exclusion (same as NOT for single terms)
+QueryParser.create().parse("java -android -ios");            // Multiple individual exclusions - excludes android AND ios separately
+QueryParser.create().parse("java -\"mobile development\"");  // ⚠️ Syntax error - use NOT for phrases
+
+// Key differences:
+// - NOT can negate complex expressions in parentheses
+// - (minus) can only exclude individual terms or simple phrases
+// - For multiple exclusions: NOT (a OR b) ≠ -a -b
+//   NOT (a OR b) excludes documents with EITHER a OR b
+//   -a -b excludes documents with a AND excludes documents with b
 ```
 
 ### Phrases
@@ -138,12 +160,20 @@ QueryParser.create().parse("[1 TO 10}");          // 1 <= x < 10
 // Use separate field queries instead
 ```
 
-### Exclusions
+### Exclusions (Additional Examples)
 
 ```java
-// Exclude terms
-QueryParser.create().parse("java -android");      // Java but not Android
-QueryParser.create().parse("spring -legacy -deprecated");  // Individual exclusions work better than grouped
+// Simple exclusions using - prefix
+QueryParser.create().parse("java -android");                    // Java but not Android
+QueryParser.create().parse("spring -legacy -deprecated");       // Spring but not legacy and not deprecated
+
+// For complex exclusions, prefer NOT operator
+QueryParser.create().parse("java NOT (android OR mobile)");     // Java but not (android OR mobile)
+QueryParser.create().parse("spring NOT \"legacy code\"");       // Spring but not the phrase "legacy code"
+
+// These are different:
+// "java NOT (android OR ios)" - excludes documents containing EITHER android OR ios  
+// "java -android -ios" - excludes documents containing android AND also excludes documents containing ios
 ```
 
 ## Advanced Features
@@ -320,12 +350,11 @@ List<String> wildcards = query.extractWildcards();         // ["john*"]
 List<String> exclusions = query.extractExclusions();       // ["deprecated"]
 Map<String, List<String>> fields = query.extractFields();  // {"title": ["spring"], "author": ["john*"]}
 
-// Get metadata
-QueryMetadata metadata = query.metadata();
-int tokenCount = metadata.tokenCount();
-int nodeCount = metadata.nodeCount();
-int maxDepth = metadata.maxDepth();
-Duration parseTime = metadata.parseTime();
+// Query analysis methods
+boolean hasAnd = query.hasAndOperations();
+boolean hasOr = query.hasOrOperations();
+boolean hasExclusions = query.hasExclusions();
+boolean isEmpty = query.isEmpty();
 ```
 
 ## Performance Considerations
