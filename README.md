@@ -56,13 +56,24 @@ import am.ik.query.parser.QueryParser.BooleanOperator;
 
 // Create a customized parser
 QueryParser parser = QueryParser.builder()
-    .defaultOperator(BooleanOperator.AND)  // Default operator between terms
-    .validateAfterParse(true)              // Validate query after parsing
-    .throwOnValidationError(true)          // Throw exception on validation error
+    .defaultOperator(BooleanOperator.AND)  // Default operator between terms (default: AND)
+    .validateAfterParse(true)              // Validate query after parsing (default: false)
+    .throwOnValidationError(true)          // Throw exception on validation error (default: false)
     .build();
 
 Query query = parser.parse("java spring boot");  // Interpreted as: java AND spring AND boot
 ```
+
+#### Builder Configuration Options
+
+| Method | Description | Default Value |
+|--------|-------------|---------------|
+| `defaultOperator(BooleanOperator)` | Operator used between terms when no explicit operator is given | `BooleanOperator.AND` |
+| `validateAfterParse(boolean)` | Whether to validate the query after parsing | `false` |
+| `throwOnValidationError(boolean)` | Whether to throw exceptions on validation errors | `false` |
+| `allowedTokenTypes(TokenType...)` | Token types allowed during validation | All `TokenType` values |
+| `fieldParser(String, Function)` | Custom parsing logic for specific field names | No custom parsers |
+| `lexer(QueryLexer)` | Custom lexer for tokenization | `QueryLexer.defaultLexer()` |
 
 ## Query Syntax
 
@@ -329,12 +340,12 @@ QueryParser parser = QueryParser.builder()
 ```java
 // Allow only specific token types
 QueryParser parser = QueryParser.builder()
-    .allowedTokenTypes(TokenType.KEYWORD, TokenType.PHRASE, TokenType.AND)
-    .throwOnValidationError(true)  // Required to enforce restrictions
+    .allowedTokenTypes(TokenType.KEYWORD, TokenType.PHRASE, TokenType.AND)  // (default: all TokenType values)
+    .validateAfterParse(true)      // Required to enable validation (default: false)
+    .throwOnValidationError(true)  // Required to enforce restrictions (default: false)
     .build();
 
 // Queries with OR, NOT, wildcards, etc. will be rejected during validation
-// Note: Token type restrictions may require additional validation setup
 ```
 
 ## Query Analysis

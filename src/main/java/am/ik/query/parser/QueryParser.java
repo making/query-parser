@@ -475,31 +475,66 @@ public final class QueryParser {
 		private Builder() {
 		}
 
+		/**
+		 * Sets the lexer to use for tokenization.
+		 * @param lexer the lexer to use (default: QueryLexer.defaultLexer())
+		 * @return this builder
+		 */
 		public Builder lexer(QueryLexer lexer) {
 			this.lexer = lexer;
 			return this;
 		}
 
+		/**
+		 * Sets the parser options.
+		 * @param options the parser options to use
+		 * @return this builder
+		 */
 		public Builder options(ParserOptions options) {
 			this.options = Objects.requireNonNull(options, "options must not be null");
 			return this;
 		}
 
+		/**
+		 * Sets the default boolean operator used between terms when no explicit operator
+		 * is specified.
+		 * @param operator the default operator to use (default: BooleanOperator.AND)
+		 * @return this builder
+		 */
 		public Builder defaultOperator(BooleanOperator operator) {
 			this.options = options.withDefaultOperator(operator);
 			return this;
 		}
 
+		/**
+		 * Sets whether to validate the query after parsing.
+		 * @param validate true to enable validation, false to disable (default: false)
+		 * @return this builder
+		 */
 		public Builder validateAfterParse(boolean validate) {
 			this.options = options.withValidateAfterParse(validate);
 			return this;
 		}
 
+		/**
+		 * Sets whether to throw an exception when validation errors occur. Only applies
+		 * when validateAfterParse is true.
+		 * @param throwOnError true to throw exceptions on validation errors, false to
+		 * allow manual error checking (default: false)
+		 * @return this builder
+		 */
 		public Builder throwOnValidationError(boolean throwOnError) {
 			this.options = options.withThrowOnValidationError(throwOnError);
 			return this;
 		}
 
+		/**
+		 * Adds a custom field parser for the specified field name.
+		 * @param field the field name to handle with custom parsing
+		 * @param parser the function to parse field values into nodes (default: no custom
+		 * parsers)
+		 * @return this builder
+		 */
 		public Builder fieldParser(String field, Function<String, Node> parser) {
 			Objects.requireNonNull(field, "field must not be null");
 			Objects.requireNonNull(parser, "parser must not be null");
@@ -507,22 +542,44 @@ public final class QueryParser {
 			return this;
 		}
 
+		/**
+		 * Adds multiple custom field parsers at once.
+		 * @param parsers a map of field names to their corresponding parsing functions
+		 * (default: no custom parsers)
+		 * @return this builder
+		 */
 		public Builder fieldParsers(Map<String, Function<String, Node>> parsers) {
 			Objects.requireNonNull(parsers, "parsers must not be null");
 			this.fieldParsers.putAll(parsers);
 			return this;
 		}
 
+		/**
+		 * Sets the allowed token types for validation. Queries containing other token
+		 * types will fail validation if validateAfterParse is enabled.
+		 * @param types the token types to allow (default: all TokenType values)
+		 * @return this builder
+		 */
 		public Builder allowedTokenTypes(TokenType... types) {
 			this.options = options.withAllowedTokenTypes(Set.of(types));
 			return this;
 		}
 
+		/**
+		 * Sets the allowed token types for validation. Queries containing other token
+		 * types will fail validation if validateAfterParse is enabled.
+		 * @param types the token types to allow (default: all TokenType values)
+		 * @return this builder
+		 */
 		public Builder allowedTokenTypes(Set<TokenType> types) {
 			this.options = options.withAllowedTokenTypes(types);
 			return this;
 		}
 
+		/**
+		 * Builds a QueryParser instance with the configured options.
+		 * @return a new QueryParser instance
+		 */
 		public QueryParser build() {
 			return new QueryParser(this);
 		}
