@@ -3,6 +3,7 @@ package am.ik.query;
 import am.ik.query.ast.AndNode;
 import am.ik.query.ast.FieldNode;
 import am.ik.query.ast.FuzzyNode;
+import am.ik.query.ast.NodeVisitor;
 import am.ik.query.ast.NotNode;
 import am.ik.query.ast.OrNode;
 import am.ik.query.ast.PhraseNode;
@@ -15,7 +16,6 @@ import am.ik.query.transform.QueryNormalizer;
 import am.ik.query.transform.QueryOptimizer;
 import am.ik.query.validation.QueryValidator;
 import am.ik.query.validation.ValidationResult;
-import am.ik.query.ast.NodeVisitor;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
@@ -380,7 +380,7 @@ class ReadmeExamplesTest {
 			}
 
 			String sql = query.accept(this);
-			return new SqlResult(sql, new java.util.HashMap<>(parameters));
+			return new SqlResult(sql, parameters);
 		}
 
 		@Override

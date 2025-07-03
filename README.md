@@ -371,7 +371,7 @@ public class SimpleContentSqlConverter implements NodeVisitor<String> {
         }
         
         String sql = query.accept(this);
-        return new SqlResult(sql, new HashMap<>(parameters));
+        return new SqlResult(sql, parameters);
     }
 
     @Override
