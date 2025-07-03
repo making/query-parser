@@ -16,6 +16,7 @@ import am.ik.query.transform.QueryNormalizer;
 import am.ik.query.transform.QueryOptimizer;
 import am.ik.query.validation.QueryValidator;
 import am.ik.query.validation.ValidationResult;
+import am.ik.query.util.QueryPrinter;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
@@ -466,6 +467,36 @@ class ReadmeExamplesTest {
 			return "";
 		}
 
+	}
+
+	@Test
+	void testQueryPrinter() {
+		QueryParser parser = QueryParser.create();
+
+		// Test simple AST
+		Query simpleQuery = parser.parse("java spring");
+		String simpleOutput = QueryPrinter.toPrettyString(simpleQuery);
+		assertThat(simpleOutput).contains("Query: java spring");
+		assertThat(simpleOutput).contains("AndNode (2 children)");
+		assertThat(simpleOutput).contains("TokenNode[KEYWORD]: \"java\"");
+		assertThat(simpleOutput).contains("TokenNode[KEYWORD]: \"spring\"");
+
+		// Test complex AST
+		Query complexQuery = parser
+			.parse("(\"Spring Boot\" OR java*) AND -deprecated AND title:framework NOT (legacy OR old)");
+		String complexOutput = QueryPrinter.toPrettyString(complexQuery);
+		assertThat(complexOutput).contains("PhraseNode: \"Spring Boot\"");
+		assertThat(complexOutput).contains("WildcardNode: \"java*\"");
+		assertThat(complexOutput).contains("FieldNode: title=\"framework\"");
+		assertThat(complexOutput).contains("OrNode (2 children)");
+		assertThat(complexOutput).contains("NotNode (1 children)");
+
+		// Test advanced features AST
+		Query advancedQuery = parser.parse("spring~2 AND [1 TO 10] AND author:john");
+		String advancedOutput = QueryPrinter.toPrettyString(advancedQuery);
+		assertThat(advancedOutput).contains("FuzzyNode: \"spring\" ~2");
+		assertThat(advancedOutput).contains("RangeNode: [1 TO 10]");
+		assertThat(advancedOutput).contains("FieldNode: author=\"john\"");
 	}
 
 }

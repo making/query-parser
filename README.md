@@ -472,6 +472,94 @@ List<String> exclusions = query.extractExclusions();       // ["deprecated"]
 Map<String, List<String>> fields = query.extractFields();  // {"title": ["spring"], "author": ["john*"]}
 ```
 
+## AST Visualization with QueryPrinter
+
+The `QueryPrinter` utility provides a convenient way to visualize the Abstract Syntax Tree (AST) structure of parsed queries:
+
+```java
+import am.ik.query.Query;
+import am.ik.query.parser.QueryParser;
+import am.ik.query.util.QueryPrinter;
+
+QueryParser parser = QueryParser.create();
+
+// Simple AST example
+Query simpleQuery = parser.parse("java spring");
+System.out.println(QueryPrinter.toPrettyString(simpleQuery));
+```
+
+**Output:**
+```
+Query: java spring
+AST:
+└─ AndNode (2 children)
+  └─ TokenNode[KEYWORD]: "java"
+  └─ TokenNode[KEYWORD]: "spring"
+```
+
+### Complex AST Example
+
+```java
+// Complex query with nested operations
+Query complexQuery = parser.parse("(\"Spring Boot\" OR java*) AND -deprecated AND title:framework NOT (legacy OR old)");
+System.out.println(QueryPrinter.toPrettyString(complexQuery));
+```
+
+**Output:**
+```
+Query: ("Spring Boot" OR java*) AND -deprecated AND title:framework NOT (legacy OR old)
+AST:
+└─ AndNode (2 children)
+  └─ AndNode (3 children)
+    └─ OrNode (2 children)
+      └─ PhraseNode: "Spring Boot"
+      └─ WildcardNode: "java*"
+    └─ NotNode (1 children)
+      └─ TokenNode[KEYWORD]: "deprecated"
+    └─ FieldNode: title="framework"
+  └─ NotNode (1 children)
+    └─ OrNode (2 children)
+      └─ TokenNode[KEYWORD]: "legacy"
+      └─ TokenNode[KEYWORD]: "old"
+```
+
+### Advanced Features AST
+
+```java
+// Query with fuzzy search, range, and field queries
+Query advancedQuery = parser.parse("spring~2 AND [1 TO 10] AND author:john");
+System.out.println(QueryPrinter.toPrettyString(advancedQuery));
+```
+
+**Output:**
+```
+Query: spring~2 AND [1 TO 10] AND author:john
+AST:
+└─ AndNode (3 children)
+  └─ FuzzyNode: "spring" ~2
+  └─ RangeNode: [1 TO 10]
+  └─ FieldNode: author="john"
+```
+
+### Node Types in AST Output
+
+The QueryPrinter displays different node types with specific formatting:
+
+- **TokenNode[TYPE]**: Basic keywords with their token type
+- **PhraseNode**: Quoted phrases
+- **WildcardNode**: Patterns with * or ? wildcards
+- **FuzzyNode**: Terms with fuzzy matching (~)
+- **FieldNode**: Field-specific queries (field:value)
+- **RangeNode**: Range queries with [start TO end] syntax
+- **AndNode/OrNode**: Boolean operations with child count
+- **NotNode**: Negation operations
+
+This visualization is particularly useful for:
+- **Debugging complex queries** and understanding parse results
+- **Learning the query syntax** by seeing how different inputs are structured
+- **Developing custom visitors** by understanding the AST hierarchy
+- **Query optimization** by identifying redundant or complex structures
+
 ## Performance Considerations
 
 - The parser is designed to handle complex queries efficiently
