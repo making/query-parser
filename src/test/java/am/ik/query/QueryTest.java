@@ -30,8 +30,8 @@ class QueryTest {
 		assertThat(query.originalQuery()).isEqualTo("hello world");
 		assertThat(query.isEmpty()).isFalse();
 		assertThat(query.extractKeywords()).containsExactly("hello", "world");
-		assertThat(query.hasPhrases()).isFalse();
-		assertThat(query.hasExclusions()).isFalse();
+		assertThat(query.extractPhrases()).isEmpty();
+		assertThat(query.extractExclusions()).isEmpty();
 		assertThat(query.countNodes(OrNode.class)).isEqualTo(0);
 		assertThat(query.countNodes(AndNode.class)).isGreaterThan(0); // Now true because
 																		// AndNode exists
@@ -43,7 +43,7 @@ class QueryTest {
 
 		assertThat(query.isEmpty()).isFalse();
 		assertThat(query.extractPhrases()).containsExactly("hello world");
-		assertThat(query.hasPhrases()).isTrue();
+		assertThat(query.extractPhrases()).isNotEmpty();
 	}
 
 	@Test
@@ -52,7 +52,7 @@ class QueryTest {
 
 		assertThat(query.extractKeywords()).containsExactly("hello");
 		assertThat(query.extractExclusions()).containsExactly("world");
-		assertThat(query.hasExclusions()).isTrue();
+		assertThat(query.extractExclusions()).isNotEmpty();
 	}
 
 	@Test
@@ -77,8 +77,8 @@ class QueryTest {
 
 		assertThat(query.countNodes(OrNode.class)).isGreaterThan(0);
 		assertThat(query.countNodes(AndNode.class)).isGreaterThan(0);
-		assertThat(query.hasPhrases()).isTrue();
-		assertThat(query.hasExclusions()).isTrue();
+		assertThat(query.extractPhrases()).isNotEmpty();
+		assertThat(query.extractExclusions()).isNotEmpty();
 
 		assertThat(query.extractKeywords()).containsExactly("hello", "world");
 		assertThat(query.extractPhrases()).containsExactly("foo bar");

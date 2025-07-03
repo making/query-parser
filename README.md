@@ -44,8 +44,8 @@ Query query = QueryParser.create().parse("java AND (spring OR boot)");
 List<String> keywords = query.extractKeywords();  // ["java", "spring", "boot"]
 
 // Check query properties
-boolean hasExclusions = query.hasExclusions();    // false  
 boolean isEmpty = query.isEmpty();                 // false
+boolean hasKeywords = !query.extractKeywords().isEmpty();  // true
 ```
 
 ### Using the Parser Builder
@@ -349,10 +349,10 @@ List<String> wildcards = query.extractWildcards();         // ["john*"]
 List<String> exclusions = query.extractExclusions();       // ["deprecated"]
 Map<String, List<String>> fields = query.extractFields();  // {"title": ["spring"], "author": ["john*"]}
 
-// Query analysis methods  
-boolean hasExclusions = query.hasExclusions();
-boolean hasPhrases = query.hasPhrases();
+// Query analysis - use extract methods instead
 boolean isEmpty = query.isEmpty();
+boolean hasExclusions = !query.extractExclusions().isEmpty();
+boolean hasPhrases = !query.extractPhrases().isEmpty();
 ```
 
 ## Performance Considerations

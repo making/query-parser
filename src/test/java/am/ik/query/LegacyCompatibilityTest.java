@@ -85,7 +85,7 @@ class LegacyCompatibilityTest {
 		Query query = legacyCompatibleParser.parse("spring -deprecated");
 		assertThat(query.extractKeywords()).containsExactly("spring");
 		assertThat(query.extractExclusions()).containsExactly("deprecated");
-		assertThat(query.hasExclusions()).isTrue();
+		assertThat(query.extractExclusions()).isNotEmpty();
 	}
 
 	@Test
@@ -108,7 +108,7 @@ class LegacyCompatibilityTest {
 		assertThat(query.extractExclusions()).containsExactly("android", "legacy");
 		assertThat(query.countNodes(OrNode.class)).isGreaterThan(0);
 		assertThat(query.countNodes(AndNode.class)).isGreaterThan(0);
-		assertThat(query.hasExclusions()).isTrue();
+		assertThat(query.extractExclusions()).isNotEmpty();
 	}
 
 	// Test that advanced features are rejected

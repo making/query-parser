@@ -55,7 +55,7 @@ class LegacyCompatibleQueryParserTest {
 
 		// Modern API assertions
 		assertThat(query.extractPhrases()).containsExactly("hello world");
-		assertThat(query.hasPhrases()).isTrue();
+		assertThat(query.extractPhrases()).isNotEmpty();
 
 		// Verify it's a phrase node
 		assertThat(query.rootNode()).isInstanceOf(PhraseNode.class);
@@ -97,7 +97,7 @@ class LegacyCompatibleQueryParserTest {
 		// Modern API assertions
 		assertThat(query.extractKeywords()).containsExactly("hello", "world");
 		assertThat(query.extractPhrases()).containsExactly("or");
-		assertThat(query.hasPhrases()).isTrue();
+		assertThat(query.extractPhrases()).isNotEmpty();
 		// Space-separated terms create AND structure
 		assertThat(query.countNodes(AndNode.class)).isGreaterThan(0);
 
@@ -112,7 +112,7 @@ class LegacyCompatibleQueryParserTest {
 		// Modern API assertions
 		assertThat(query.extractKeywords()).containsExactly("hello");
 		assertThat(query.extractExclusions()).containsExactly("world");
-		assertThat(query.hasExclusions()).isTrue();
+		assertThat(query.extractExclusions()).isNotEmpty();
 
 		// Structure will include AndNode and NotNode due to modern parser
 		assertThat(query.countNodes(AndNode.class)).isGreaterThan(0);
@@ -214,7 +214,7 @@ class LegacyCompatibleQueryParserTest {
 		assertThat(booleanQuery.countNodes(OrNode.class)).isGreaterThan(0);
 
 		Query excludeQuery = strictLegacyParser.parse("hello -world");
-		assertThat(excludeQuery.hasExclusions()).isTrue();
+		assertThat(excludeQuery.extractExclusions()).isNotEmpty();
 
 		Query nestedQuery = strictLegacyParser.parse("hello (world OR java)");
 		assertThat(nestedQuery.extractKeywords()).containsExactly("hello", "world", "java");
@@ -246,7 +246,7 @@ class LegacyCompatibleQueryParserTest {
 		assertThat(query.rootNode()).isNotNull();
 		assertThat(query.isEmpty()).isFalse();
 		assertThat(query.countNodes(OrNode.class)).isGreaterThan(0);
-		assertThat(query.hasExclusions()).isTrue();
+		assertThat(query.extractExclusions()).isNotEmpty();
 	}
 
 }

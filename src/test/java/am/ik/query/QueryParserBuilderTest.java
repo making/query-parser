@@ -72,8 +72,8 @@ class QueryParserBuilderTest {
 
 		assertThat(query.countNodes(OrNode.class)).isGreaterThan(0);
 		assertThat(query.countNodes(AndNode.class)).isGreaterThan(0);
-		assertThat(query.hasPhrases()).isTrue();
-		assertThat(query.hasExclusions()).isTrue();
+		assertThat(query.extractPhrases()).isNotEmpty();
+		assertThat(query.extractExclusions()).isNotEmpty();
 	}
 
 	@Test

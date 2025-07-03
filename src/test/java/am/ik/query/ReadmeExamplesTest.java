@@ -323,7 +323,7 @@ class ReadmeExamplesTest {
 		// Verify operations
 		assertThat(query.countNodes(AndNode.class)).isGreaterThan(0);
 		assertThat(query.countNodes(OrNode.class)).isGreaterThan(0);
-		assertThat(query.hasExclusions()).isTrue();
+		assertThat(query.extractExclusions()).isNotEmpty();
 	}
 
 }
