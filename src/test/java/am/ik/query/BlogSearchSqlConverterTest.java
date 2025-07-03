@@ -6,6 +6,19 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import am.ik.query.ast.AndNode;
+import am.ik.query.ast.FieldNode;
+import am.ik.query.ast.FuzzyNode;
+import am.ik.query.ast.NotNode;
+import am.ik.query.ast.OrNode;
+import am.ik.query.ast.PhraseNode;
+import am.ik.query.ast.RangeNode;
+import am.ik.query.ast.RootNode;
+import am.ik.query.ast.TokenNode;
+import am.ik.query.ast.WildcardNode;
+import am.ik.query.parser.QueryParser;
+import am.ik.query.visitor.NodeVisitor;
+
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**

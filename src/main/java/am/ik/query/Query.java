@@ -8,6 +8,22 @@ import java.util.Objects;
 import java.util.function.Consumer;
 import java.util.function.Function;
 
+import am.ik.query.ast.AndNode;
+import am.ik.query.ast.FieldNode;
+import am.ik.query.ast.FuzzyNode;
+import am.ik.query.ast.Node;
+import am.ik.query.ast.NotNode;
+import am.ik.query.ast.OrNode;
+import am.ik.query.ast.PhraseNode;
+import am.ik.query.ast.RangeNode;
+import am.ik.query.ast.RootNode;
+import am.ik.query.ast.TokenNode;
+import am.ik.query.ast.WildcardNode;
+import am.ik.query.lexer.Token;
+import am.ik.query.lexer.TokenType;
+import am.ik.query.visitor.NodeVisitor;
+import am.ik.query.visitor.SerializerVisitor;
+
 /**
  * Represents a parsed search query with its AST structure. Provides fluent API for query
  * manipulation and traversal.
@@ -22,7 +38,7 @@ public final class Query {
 
 	private final QueryMetadata metadata;
 
-	Query(String originalQuery, Node rootNode, QueryMetadata metadata) {
+	public Query(String originalQuery, Node rootNode, QueryMetadata metadata) {
 		this.originalQuery = Objects.requireNonNull(originalQuery, "originalQuery must not be null");
 		this.rootNode = Objects.requireNonNull(rootNode, "rootNode must not be null");
 		this.metadata = Objects.requireNonNull(metadata, "metadata must not be null");

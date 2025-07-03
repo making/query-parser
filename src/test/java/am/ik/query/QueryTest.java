@@ -2,6 +2,20 @@ package am.ik.query;
 
 import org.junit.jupiter.api.Test;
 
+import am.ik.query.ast.AndNode;
+import am.ik.query.ast.FieldNode;
+import am.ik.query.ast.FuzzyNode;
+import am.ik.query.ast.RangeNode;
+import am.ik.query.ast.RootNode;
+import am.ik.query.ast.WildcardNode;
+import am.ik.query.parser.QueryParser;
+import am.ik.query.transform.QueryNormalizer;
+import am.ik.query.transform.QueryOptimizer;
+import am.ik.query.util.QueryPrinter;
+import am.ik.query.validation.QueryValidator;
+import am.ik.query.validation.ValidationResult;
+import am.ik.query.visitor.BaseNodeVisitor;
+
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
