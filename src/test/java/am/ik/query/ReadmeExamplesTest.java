@@ -326,4 +326,146 @@ class ReadmeExamplesTest {
 		assertThat(query.extractExclusions()).isNotEmpty();
 	}
 
+	@Test
+	void testSqlConverter() {
+		SimpleContentSqlConverter converter = new SimpleContentSqlConverter();
+		QueryParser parser = QueryParser.create();
+
+		// Test simple keywords
+		Query query1 = parser.parse("java spring");
+		SimpleContentSqlConverter.SqlResult result1 = converter.convertToSql(query1);
+		assertThat(result1.whereClause()).isEqualTo("(content LIKE :param1 AND content LIKE :param2)");
+		assertThat(result1.parameters()).containsEntry("param1", "%java%");
+		assertThat(result1.parameters()).containsEntry("param2", "%spring%");
+
+		// Test OR with exclusion
+		Query query2 = parser.parse("(java OR kotlin) -deprecated");
+		SimpleContentSqlConverter.SqlResult result2 = converter.convertToSql(query2);
+		assertThat(result2.whereClause())
+			.isEqualTo("((content LIKE :param1 OR content LIKE :param2) AND content NOT LIKE :param3)");
+		assertThat(result2.parameters()).containsEntry("param1", "%java%");
+		assertThat(result2.parameters()).containsEntry("param2", "%kotlin%");
+		assertThat(result2.parameters()).containsEntry("param3", "%deprecated%");
+
+		// Test phrase
+		Query query3 = parser.parse("\"Spring Boot\"");
+		SimpleContentSqlConverter.SqlResult result3 = converter.convertToSql(query3);
+		assertThat(result3.whereClause()).isEqualTo("content LIKE :param1");
+		assertThat(result3.parameters()).containsEntry("param1", "%Spring Boot%");
+
+		// Test empty query
+		Query query4 = parser.parse("");
+		SimpleContentSqlConverter.SqlResult result4 = converter.convertToSql(query4);
+		assertThat(result4.whereClause()).isEqualTo("1=1");
+		assertThat(result4.parameters()).isEmpty();
+	}
+
+	// Inner class to implement the SQL converter from README
+	private static class SimpleContentSqlConverter implements NodeVisitor<String> {
+
+		// Result record containing parameterized SQL and parameters
+		public record SqlResult(String whereClause, java.util.Map<String, Object> parameters) {
+		}
+
+		private final java.util.Map<String, Object> parameters = new java.util.HashMap<>();
+
+		private int paramCounter = 1;
+
+		public SqlResult convertToSql(Query query) {
+			parameters.clear();
+			paramCounter = 1;
+
+			if (query.isEmpty()) {
+				return new SqlResult("1=1", java.util.Map.of()); // Always true condition
+			}
+
+			String sql = query.accept(this);
+			return new SqlResult(sql, new java.util.HashMap<>(parameters));
+		}
+
+		@Override
+		public String visitRoot(RootNode node) {
+			return node.children()
+				.stream()
+				.map(child -> child.accept(this))
+				.filter(sql -> !sql.isEmpty())
+				.collect(Collectors.joining(" AND "));
+		}
+
+		@Override
+		public String visitAnd(AndNode node) {
+			String result = node.children()
+				.stream()
+				.map(child -> child.accept(this))
+				.filter(sql -> !sql.isEmpty())
+				.collect(Collectors.joining(" AND "));
+			return node.children().size() > 1 ? "(" + result + ")" : result;
+		}
+
+		@Override
+		public String visitOr(OrNode node) {
+			String result = node.children()
+				.stream()
+				.map(child -> child.accept(this))
+				.filter(sql -> !sql.isEmpty())
+				.collect(Collectors.joining(" OR "));
+			return "(" + result + ")";
+		}
+
+		@Override
+		public String visitNot(NotNode node) {
+			// Handle NOT of TokenNode as exclusion (generates NOT LIKE directly)
+			if (node.child() instanceof TokenNode tokenNode
+					&& tokenNode.type() == am.ik.query.lexer.TokenType.KEYWORD) {
+				return createLikeClause("content", tokenNode.value(), true);
+			}
+
+			String childSql = node.child().accept(this);
+			return childSql.isEmpty() ? "" : "NOT " + childSql;
+		}
+
+		@Override
+		public String visitToken(TokenNode node) {
+			return switch (node.type()) {
+				case KEYWORD -> createLikeClause("content", node.value(), false);
+				case EXCLUDE -> createLikeClause("content", node.value(), true);
+				default -> "";
+			};
+		}
+
+		@Override
+		public String visitPhrase(PhraseNode node) {
+			return createLikeClause("content", node.phrase(), false);
+		}
+
+		private String createLikeClause(String column, String value, boolean negated) {
+			String paramName = "param" + paramCounter++;
+			parameters.put(paramName, "%" + value + "%");
+			String operator = negated ? "NOT LIKE" : "LIKE";
+			return column + " " + operator + " :" + paramName;
+		}
+
+		// Ignore field queries, wildcards, etc. for this simple example
+		@Override
+		public String visitField(FieldNode node) {
+			return "";
+		}
+
+		@Override
+		public String visitWildcard(WildcardNode node) {
+			return "";
+		}
+
+		@Override
+		public String visitFuzzy(FuzzyNode node) {
+			return "";
+		}
+
+		@Override
+		public String visitRange(RangeNode node) {
+			return "";
+		}
+
+	}
+
 }

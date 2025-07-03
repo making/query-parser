@@ -343,6 +343,122 @@ QueryParser parser = QueryParser.builder()
 // Queries with OR, NOT, wildcards, etc. will be rejected during validation
 ```
 
+## Practical Example: SQL Converter
+
+Here's a simple example of converting queries to parameterized SQL WHERE clauses for content search:
+
+```java
+import am.ik.query.ast.*;
+import am.ik.query.lexer.TokenType;
+import am.ik.query.visitor.NodeVisitor;
+import java.util.*;
+import java.util.stream.Collectors;
+
+public class SimpleContentSqlConverter implements NodeVisitor<String> {
+    
+    // Result record containing parameterized SQL and parameters
+    public record SqlResult(String whereClause, Map<String, Object> parameters) {}
+    
+    private final Map<String, Object> parameters = new HashMap<>();
+    private int paramCounter = 1;
+    
+    public SqlResult convertToSql(Query query) {
+        parameters.clear();
+        paramCounter = 1;
+        
+        if (query.isEmpty()) {
+            return new SqlResult("1=1", Map.of());  // Always true condition
+        }
+        
+        String sql = query.accept(this);
+        return new SqlResult(sql, new HashMap<>(parameters));
+    }
+
+    @Override
+    public String visitRoot(RootNode node) {
+        return node.children().stream()
+            .map(child -> child.accept(this))
+            .filter(sql -> !sql.isEmpty())
+            .collect(Collectors.joining(" AND "));
+    }
+
+    @Override
+    public String visitAnd(AndNode node) {
+        String result = node.children().stream()
+            .map(child -> child.accept(this))
+            .filter(sql -> !sql.isEmpty())
+            .collect(Collectors.joining(" AND "));
+        return node.children().size() > 1 ? "(" + result + ")" : result;
+    }
+
+    @Override
+    public String visitOr(OrNode node) {
+        String result = node.children().stream()
+            .map(child -> child.accept(this))
+            .filter(sql -> !sql.isEmpty())
+            .collect(Collectors.joining(" OR "));
+        return "(" + result + ")";
+    }
+
+    @Override
+    public String visitNot(NotNode node) {
+        // Handle NOT of TokenNode as exclusion (generates NOT LIKE directly)
+        if (node.child() instanceof TokenNode tokenNode && tokenNode.type() == TokenType.KEYWORD) {
+            return createLikeClause("content", tokenNode.value(), true);
+        }
+        
+        String childSql = node.child().accept(this);
+        return childSql.isEmpty() ? "" : "NOT " + childSql;
+    }
+
+    @Override
+    public String visitToken(TokenNode node) {
+        return switch (node.type()) {
+            case KEYWORD -> createLikeClause("content", node.value(), false);
+            case EXCLUDE -> createLikeClause("content", node.value(), true);
+            default -> "";
+        };
+    }
+
+    @Override
+    public String visitPhrase(PhraseNode node) {
+        return createLikeClause("content", node.phrase(), false);
+    }
+    
+    private String createLikeClause(String column, String value, boolean negated) {
+        String paramName = "param" + paramCounter++;
+        parameters.put(paramName, "%" + value + "%");
+        String operator = negated ? "NOT LIKE" : "LIKE";
+        return column + " " + operator + " :" + paramName;
+    }
+
+    // Ignore field queries, wildcards, etc. for this simple example
+    @Override public String visitField(FieldNode node) { return ""; }
+    @Override public String visitWildcard(WildcardNode node) { return ""; }
+    @Override public String visitFuzzy(FuzzyNode node) { return ""; }
+    @Override public String visitRange(RangeNode node) { return ""; }
+}
+
+// Usage example:
+QueryParser parser = QueryParser.create();
+SimpleContentSqlConverter converter = new SimpleContentSqlConverter();
+
+Query query1 = parser.parse("java spring");
+SqlResult result1 = converter.convertToSql(query1);
+// result1.whereClause(): "(content LIKE :param1 AND content LIKE :param2)"
+// result1.parameters(): {"param1": "%java%", "param2": "%spring%"}
+
+Query query2 = parser.parse("(java OR kotlin) -deprecated");  
+SqlResult result2 = converter.convertToSql(query2);
+// result2.whereClause(): "((content LIKE :param1 OR content LIKE :param2) AND content NOT LIKE :param3)"
+// result2.parameters(): {"param1": "%java%", "param2": "%kotlin%", "param3": "%deprecated%"}
+
+Query query3 = parser.parse("\"Spring Boot\"");
+SqlResult result3 = converter.convertToSql(query3);
+// result3.whereClause(): "content LIKE :param1"
+// result3.parameters(): {"param1": "%Spring Boot%"}
+```
+
 ## Query Analysis
 
 ```java
