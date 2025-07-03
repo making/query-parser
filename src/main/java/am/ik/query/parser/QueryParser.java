@@ -46,8 +46,6 @@ public final class QueryParser {
 
 	private int position;
 
-	private int maxDepth;
-
 	private QueryParser(Builder builder) {
 		this.lexer = builder.lexer != null ? builder.lexer : QueryLexer.defaultLexer();
 		this.options = builder.options;
@@ -72,7 +70,6 @@ public final class QueryParser {
 			// Tokenize
 			this.tokens = lexer.tokenize(queryString);
 			this.position = 0;
-			this.maxDepth = 0;
 
 			// Parse
 			Node rootNode = parseQuery();
@@ -212,7 +209,6 @@ public final class QueryParser {
 
 		// Handle grouping
 		if (match(TokenType.LPAREN)) {
-			maxDepth++;
 			Node node = parseOr();
 			consume(TokenType.RPAREN, "Expected ')' after expression");
 			return node;
