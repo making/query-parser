@@ -4,8 +4,6 @@ import java.util.List;
 import java.util.Objects;
 import java.util.function.Consumer;
 
-import am.ik.query.visitor.NodeVisitor;
-
 /**
  * Represents an OR operation node in the query AST. At least one child must match for
  * this node to match.

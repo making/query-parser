@@ -1,5 +1,12 @@
 package am.ik.query;
 
+import am.ik.query.ast.AndNode;
+import am.ik.query.ast.NotNode;
+import am.ik.query.ast.OrNode;
+import am.ik.query.ast.PhraseNode;
+import am.ik.query.ast.TokenNode;
+import am.ik.query.lexer.TokenType;
+import am.ik.query.parser.QueryParser;
 import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;

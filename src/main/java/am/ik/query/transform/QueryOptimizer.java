@@ -1,15 +1,10 @@
 package am.ik.query.transform;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-
-import am.ik.query.Query;
 import am.ik.query.ast.AndNode;
 import am.ik.query.ast.FieldNode;
 import am.ik.query.ast.FuzzyNode;
 import am.ik.query.ast.Node;
+import am.ik.query.ast.NodeVisitor;
 import am.ik.query.ast.NotNode;
 import am.ik.query.ast.OrNode;
 import am.ik.query.ast.PhraseNode;
@@ -17,7 +12,10 @@ import am.ik.query.ast.RangeNode;
 import am.ik.query.ast.RootNode;
 import am.ik.query.ast.TokenNode;
 import am.ik.query.ast.WildcardNode;
-import am.ik.query.visitor.NodeVisitor;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 /**
  * Query optimizer that applies various optimization strategies.

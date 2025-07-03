@@ -1,9 +1,14 @@
 package am.ik.query;
 
+import am.ik.query.ast.RootNode;
+import am.ik.query.ast.TokenNode;
+import am.ik.query.lexer.TokenType;
+import am.ik.query.parser.QueryParser;
 import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+@SuppressWarnings("removal")
 class QueryParserTest {
 
 	@Test

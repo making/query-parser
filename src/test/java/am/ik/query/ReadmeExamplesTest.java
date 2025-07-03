@@ -1,11 +1,25 @@
 package am.ik.query;
 
-import org.junit.jupiter.api.Test;
-
+import am.ik.query.ast.AndNode;
+import am.ik.query.ast.FieldNode;
+import am.ik.query.ast.FuzzyNode;
+import am.ik.query.ast.NotNode;
+import am.ik.query.ast.OrNode;
+import am.ik.query.ast.PhraseNode;
+import am.ik.query.ast.RangeNode;
+import am.ik.query.ast.RootNode;
+import am.ik.query.ast.TokenNode;
+import am.ik.query.ast.WildcardNode;
+import am.ik.query.parser.QueryParser;
+import am.ik.query.transform.QueryNormalizer;
+import am.ik.query.transform.QueryOptimizer;
+import am.ik.query.validation.QueryValidator;
+import am.ik.query.validation.ValidationResult;
+import am.ik.query.ast.NodeVisitor;
 import java.util.List;
-import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
+import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -257,7 +271,7 @@ class ReadmeExamplesTest {
 		// Fields were removed from this test due to parsing complexity
 
 		// Verify basic query properties
-		assertThat(query.originalQuery()).isEqualTo("java AND (spring OR \"machine learning\") -deprecated");
+		assertThat(query.originalQuery()).isEqualTo("\"Spring Boot\" AND (java OR kotlin) -deprecated");
 		assertThat(query.rootNode()).isNotNull();
 		assertThat(query.isEmpty()).isFalse();
 	}

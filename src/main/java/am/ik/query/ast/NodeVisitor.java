@@ -1,15 +1,4 @@
-package am.ik.query.visitor;
-
-import am.ik.query.ast.AndNode;
-import am.ik.query.ast.FieldNode;
-import am.ik.query.ast.FuzzyNode;
-import am.ik.query.ast.NotNode;
-import am.ik.query.ast.OrNode;
-import am.ik.query.ast.PhraseNode;
-import am.ik.query.ast.RangeNode;
-import am.ik.query.ast.RootNode;
-import am.ik.query.ast.TokenNode;
-import am.ik.query.ast.WildcardNode;
+package am.ik.query.ast;
 
 /**
  * Visitor interface for traversing query AST nodes. Implements the visitor pattern for

@@ -1,11 +1,9 @@
 package am.ik.query.ast;
 
-import java.util.Objects;
-import java.util.function.Consumer;
-
 import am.ik.query.lexer.Token;
 import am.ik.query.lexer.TokenType;
-import am.ik.query.visitor.NodeVisitor;
+import java.util.Objects;
+import java.util.function.Consumer;
 
 /**
  * Represents a token node in the query AST. This is a leaf node containing a single

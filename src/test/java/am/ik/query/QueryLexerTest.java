@@ -1,8 +1,10 @@
 package am.ik.query;
 
-import org.junit.jupiter.api.Test;
-
+import am.ik.query.lexer.QueryLexer;
+import am.ik.query.lexer.Token;
+import am.ik.query.lexer.TokenType;
 import java.util.List;
+import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;

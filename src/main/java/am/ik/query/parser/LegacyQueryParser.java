@@ -1,12 +1,9 @@
 package am.ik.query.parser;
 
-import java.util.List;
-
-import am.ik.query.Query;
 import am.ik.query.ast.RootNode;
 import am.ik.query.ast.TokenNode;
-import am.ik.query.lexer.LegacyQueryLexer;
 import am.ik.query.lexer.Token;
+import java.util.List;
 
 /**
  * Legacy query parser for backward compatibility.

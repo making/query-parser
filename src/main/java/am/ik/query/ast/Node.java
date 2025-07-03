@@ -3,8 +3,6 @@ package am.ik.query.ast;
 import java.util.List;
 import java.util.function.Consumer;
 
-import am.ik.query.visitor.NodeVisitor;
-
 /**
  * Base interface for all AST nodes in a query. This is a sealed interface to ensure type
  * safety and exhaustive pattern matching.

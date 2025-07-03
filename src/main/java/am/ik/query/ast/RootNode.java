@@ -5,8 +5,6 @@ import java.util.List;
 import java.util.Objects;
 import java.util.function.Consumer;
 
-import am.ik.query.visitor.NodeVisitor;
-
 /**
  * Represents the root node of a query AST. Acts as a container for top-level query
  * elements.

@@ -1,10 +1,22 @@
 package am.ik.query;
 
-import org.junit.jupiter.api.Test;
-
+import am.ik.query.ast.AndNode;
+import am.ik.query.ast.FieldNode;
+import am.ik.query.ast.FuzzyNode;
+import am.ik.query.ast.NotNode;
+import am.ik.query.ast.OrNode;
+import am.ik.query.ast.PhraseNode;
+import am.ik.query.ast.RangeNode;
+import am.ik.query.ast.RootNode;
+import am.ik.query.ast.TokenNode;
+import am.ik.query.ast.WildcardNode;
+import am.ik.query.lexer.TokenType;
+import am.ik.query.parser.QueryParser;
+import am.ik.query.ast.NodeVisitor;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
+import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
 

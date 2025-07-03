@@ -1,18 +1,5 @@
 package am.ik.query.parser;
 
-import java.time.Instant;
-import java.util.ArrayList;
-import java.util.EnumSet;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Set;
-import java.util.function.Function;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import am.ik.query.Query;
 import am.ik.query.ast.AndNode;
 import am.ik.query.ast.FieldNode;
@@ -32,6 +19,15 @@ import am.ik.query.lexer.TokenType;
 import am.ik.query.validation.QueryValidationException;
 import am.ik.query.validation.QueryValidator;
 import am.ik.query.validation.ValidationResult;
+import java.time.Instant;
+import java.util.ArrayList;
+import java.util.EnumSet;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Set;
+import java.util.function.Function;
 
 /**
  * Query parser with advanced features and builder pattern.
@@ -39,8 +35,6 @@ import am.ik.query.validation.ValidationResult;
  * @author Toshiaki Maki
  */
 public final class QueryParser {
-
-	private static final Logger logger = LoggerFactory.getLogger(QueryParser.class);
 
 	private final QueryLexer lexer;
 

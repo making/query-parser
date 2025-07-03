@@ -3,8 +3,6 @@ package am.ik.query.ast;
 import java.util.Objects;
 import java.util.function.Consumer;
 
-import am.ik.query.visitor.NodeVisitor;
-
 /**
  * Represents a range query node in the AST. Format: [start TO end] or {start TO end}
  *

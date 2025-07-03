@@ -1,14 +1,13 @@
 package am.ik.query.util;
 
-import java.io.PrintWriter;
-import java.io.StringWriter;
-
 import am.ik.query.Query;
 import am.ik.query.ast.FieldNode;
 import am.ik.query.ast.FuzzyNode;
 import am.ik.query.ast.Node;
 import am.ik.query.ast.RangeNode;
 import am.ik.query.ast.TokenNode;
+import java.io.PrintWriter;
+import java.io.StringWriter;
 
 /**
  * Pretty printer for queries.

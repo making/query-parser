@@ -1,10 +1,9 @@
 package am.ik.query.transform;
 
-import java.util.function.Function;
-
 import am.ik.query.Query;
 import am.ik.query.ast.Node;
-import am.ik.query.visitor.NodeVisitor;
+import am.ik.query.ast.NodeVisitor;
+import java.util.function.Function;
 
 /**
  * Interface for transforming queries. Implementations can modify the query structure.

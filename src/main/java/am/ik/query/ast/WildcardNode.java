@@ -1,11 +1,9 @@
 package am.ik.query.ast;
 
-import java.util.Objects;
-import java.util.function.Consumer;
-
 import am.ik.query.lexer.Token;
 import am.ik.query.lexer.TokenType;
-import am.ik.query.visitor.NodeVisitor;
+import java.util.Objects;
+import java.util.function.Consumer;
 
 /**
  * Represents a wildcard query node in the AST. Supports * (zero or more chars) and ?
