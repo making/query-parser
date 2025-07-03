@@ -179,10 +179,10 @@ String result = query.accept(new NodeVisitor<String>() {
 
 ```java
 // Normalize query (lowercase, sort terms, normalize whitespace)
-Query normalized = query.normalize();
+Query normalized = query.transform(QueryNormalizer.defaultNormalizer());
 
 // Optimize query (remove duplicates, flatten nested operations)
-Query optimized = query.optimize();
+Query optimized = query.transform(QueryOptimizer.defaultOptimizer());
 
 // Chain transformations
 Query transformed = query
@@ -341,7 +341,7 @@ Duration parseTime = metadata.parseTime();
 - `Query` objects are immutable and thread-safe
 - All transformation operations return new `Query` instances
 - Note: Transformations may return the same instance if no changes are made
-- Example: `normalize()` only changes case and whitespace, so "original" stays "original"
+- Example: normalizer only changes case and whitespace, so "original" stays "original"
 
 ## Development
 

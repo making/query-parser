@@ -1,12 +1,14 @@
 package am.ik.query;
 
+import java.util.function.Function;
+
 /**
  * Interface for transforming queries. Implementations can modify the query structure.
  *
  * @author Toshiaki Maki
  */
 @FunctionalInterface
-public interface QueryTransformer {
+public interface QueryTransformer extends Function<Query, Query> {
 
 	/**
 	 * Transforms the given query.
@@ -14,6 +16,11 @@ public interface QueryTransformer {
 	 * @return the transformed query
 	 */
 	Query transform(Query query);
+
+	@Override
+	default Query apply(Query query) {
+		return transform(query);
+	}
 
 	/**
 	 * Chains this transformer with another.

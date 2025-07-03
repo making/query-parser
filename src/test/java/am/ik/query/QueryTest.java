@@ -84,7 +84,7 @@ class QueryTest {
 	@Test
 	void testOptimization() {
 		Query query = QueryParser.create().parse("hello OR hello AND world");
-		Query optimized = query.optimize();
+		Query optimized = query.transform(QueryOptimizer.defaultOptimizer());
 
 		assertThat(optimized).isNotNull();
 		// The optimizer should remove duplicate "hello"
@@ -93,7 +93,7 @@ class QueryTest {
 	@Test
 	void testNormalization() {
 		Query query = QueryParser.create().parse("HELLO   world");
-		Query normalized = query.normalize();
+		Query normalized = query.transform(QueryNormalizer.defaultNormalizer());
 
 		assertThat(normalized).isNotNull();
 		// The normalizer should lowercase and normalize whitespace

@@ -200,11 +200,11 @@ class LegacyCompatibilityTest {
 		// Legacy compatible parser should still support transformations
 		Query query = legacyCompatibleParser.parse("HELLO WORLD");
 
-		Query normalized = query.normalize();
+		Query normalized = query.transform(QueryNormalizer.defaultNormalizer());
 		assertThat(normalized.toString()).contains("hello");
 		assertThat(normalized.toString()).contains("world");
 
-		Query optimized = query.optimize();
+		Query optimized = query.transform(QueryOptimizer.defaultOptimizer());
 		assertThat(optimized).isNotNull();
 	}
 

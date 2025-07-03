@@ -207,12 +207,12 @@ class ReadmeExamplesTest {
 		Query query = QueryParser.create().parse("HELLO AND WORLD");
 
 		// Normalize query (lowercase, sort terms, normalize whitespace)
-		Query normalized = query.normalize();
+		Query normalized = query.transform(QueryNormalizer.defaultNormalizer());
 		assertThat(normalized.toString()).contains("hello");
 		assertThat(normalized.toString()).contains("world");
 
 		// Optimize query
-		Query optimized = query.optimize();
+		Query optimized = query.transform(QueryOptimizer.defaultOptimizer());
 		assertThat(optimized).isNotNull();
 
 		// Chain transformations
@@ -290,7 +290,7 @@ class ReadmeExamplesTest {
 
 		// Query objects are immutable
 		Query query = QueryParser.create().parse("ORIGINAL");
-		Query transformed = query.normalize();
+		Query transformed = query.transform(QueryNormalizer.defaultNormalizer());
 		assertThat(transformed.toString()).contains("original"); // lowercase
 	}
 

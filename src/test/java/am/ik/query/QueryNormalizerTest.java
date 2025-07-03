@@ -65,7 +65,7 @@ class QueryNormalizerTest {
 	@Test
 	void testDefaultNormalizer() {
 		Query query = QueryParser.create().parse("HELLO   café  WORLD");
-		Query normalized = query.normalize();
+		Query normalized = query.transform(QueryNormalizer.defaultNormalizer());
 
 		// Should apply lowercase, whitespace normalization, and sorting
 		assertThat(normalized.toString()).doesNotContain("HELLO");
@@ -89,7 +89,7 @@ class QueryNormalizerTest {
 	@Test
 	void testNormalizeComplexQuery() {
 		Query query = QueryParser.create().parse("(HELLO OR world) AND \"Test  Phrase\" -EXCLUDE");
-		Query normalized = query.normalize();
+		Query normalized = query.transform(QueryNormalizer.defaultNormalizer());
 
 		assertThat(normalized.toString()).contains("hello");
 		assertThat(normalized.toString()).contains("world");
@@ -101,7 +101,7 @@ class QueryNormalizerTest {
 	@Test
 	void testFieldNormalization() {
 		Query query = QueryParser.create().parse("title:HELLO author:\"John  Doe\"");
-		Query normalized = query.normalize();
+		Query normalized = query.transform(QueryNormalizer.defaultNormalizer());
 
 		// Field names should remain as-is, values should be normalized
 		assertThat(normalized.toString()).contains("title:");

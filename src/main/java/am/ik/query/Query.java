@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.function.Consumer;
+import java.util.function.Function;
 
 /**
  * Represents a parsed search query with its AST structure. Provides fluent API for query
@@ -70,28 +71,12 @@ public final class Query {
 	}
 
 	/**
-	 * Transforms this query using the given transformer.
-	 * @param transformer the query transformer
+	 * Transforms this query using the given transformer function.
+	 * @param transformer the query transformer function
 	 * @return the transformed query
 	 */
-	public Query transform(QueryTransformer transformer) {
-		return transformer.transform(this);
-	}
-
-	/**
-	 * Optimizes this query using the default optimizer.
-	 * @return the optimized query
-	 */
-	public Query optimize() {
-		return transform(QueryOptimizer.defaultOptimizer());
-	}
-
-	/**
-	 * Normalizes this query using the default normalizer.
-	 * @return the normalized query
-	 */
-	public Query normalize() {
-		return transform(QueryNormalizer.defaultNormalizer());
+	public Query transform(Function<Query, Query> transformer) {
+		return transformer.apply(this);
 	}
 
 	/**
