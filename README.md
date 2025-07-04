@@ -35,12 +35,22 @@ Add the following dependency to your `pom.xml`:
 ```java
 import am.ik.query.Query;
 import am.ik.query.parser.QueryParser;
+import am.ik.query.util.QueryPrinter;
 
 // Parse a simple query
 Query query = QueryParser.create().parse("java AND (spring OR boot)");
 
 // Extract keywords
 List<String> keywords = query.extractKeywords();  // ["java", "spring", "boot"]
+
+System.out.println(QueryPrinter.toPrettyString(query));
+// Query: java AND (spring OR boot)
+// AST:
+// └─ AndNode (2 children)
+//   └─ TokenNode[KEYWORD]: "java"
+//   └─ OrNode (2 children)
+//     └─ TokenNode[KEYWORD]: "spring"
+//     └─ TokenNode[KEYWORD]: "boot"
 ```
 
 ### Using the Parser Builder
@@ -75,15 +85,17 @@ Query query = parser.parse("java spring boot");  // Interpreted as: java AND spr
 ### Boolean Operators
 
 ```java
+QueryParser queryParser = QueryParser.create();
+
 // Explicit operators
-QueryParser.create().parse("java AND spring");
-QueryParser.create().parse("java OR kotlin");
+queryParser.parse("java AND spring");
+queryParser.parse("java OR kotlin");
 
 // Implicit AND (default behavior)
-QueryParser.create().parse("java spring");  // Same as: java AND spring
+queryParser.parse("java spring");  // Same as: java AND spring
 
 // Complex boolean expressions
-QueryParser.create().parse("(java OR kotlin) AND (spring OR boot)");
+queryParser.parse("(java OR kotlin) AND (spring OR boot)");
 ```
 
 ### Negation: NOT vs - (Exclusion)
@@ -92,14 +104,14 @@ There are two ways to exclude terms, with important differences:
 
 ```java
 // Method 1: NOT operator (can negate complex expressions)
-QueryParser.create().parse("java NOT android");              // Single term negation
-QueryParser.create().parse("java NOT (android OR ios)");     // Group negation - excludes documents containing EITHER android OR ios
-QueryParser.create().parse("java NOT \"mobile development\""); // Phrase negation
+queryParser.parse("java NOT android");              // Single term negation
+queryParser.parse("java NOT (android OR ios)");     // Group negation - excludes documents containing EITHER android OR ios
+queryParser.parse("java NOT \"mobile development\""); // Phrase negation
 
 // Method 2: - prefix (excludes individual terms only)
-QueryParser.create().parse("java -android");                 // Single term exclusion (same as NOT for single terms)
-QueryParser.create().parse("java -android -ios");            // Multiple individual exclusions - excludes android AND ios separately
-QueryParser.create().parse("java -\"mobile development\"");  // ⚠️ Syntax error - use NOT for phrases
+queryParser.parse("java -android");                 // Single term exclusion (same as NOT for single terms)
+queryParser.parse("java -android -ios");            // Multiple individual exclusions - excludes android AND ios separately
+queryParser.parse("java -\"mobile development\"");  // ⚠️ Syntax error - use NOT for phrases
 
 // Key differences:
 // - NOT can negate complex expressions in parentheses
@@ -113,10 +125,10 @@ QueryParser.create().parse("java -\"mobile development\"");  // ⚠️ Syntax er
 
 ```java
 // Exact phrase matching
-QueryParser.create().parse("\"hello world\"");
+queryParser.parse("\"hello world\"");
 
 // Phrases in complex queries  
-QueryParser.create().parse("\"Spring Boot\" AND \"Josh Long\"");
+queryParser.parse("\"Spring Boot\" AND \"Josh Long\"");
 
 // Note: Field phrases are extracted via extractFields(), not extractPhrases()
 ```
@@ -125,41 +137,41 @@ QueryParser.create().parse("\"Spring Boot\" AND \"Josh Long\"");
 
 ```java
 // ? matches single character, * matches multiple characters
-QueryParser.create().parse("spr?ng");      // Matches: spring, sprang
-QueryParser.create().parse("spring*");     // Matches: spring, springframework, springboot
-QueryParser.create().parse("*boot*");      // Matches: boot, springboot, bootstrap
+queryParser.parse("spr?ng");      // Matches: spring, sprang
+queryParser.parse("spring*");     // Matches: spring, springframework, springboot
+queryParser.parse("*boot*");      // Matches: boot, springboot, bootstrap
 ```
 
 ### Fuzzy Search
 
 ```java
 // Default edit distance (2)
-QueryParser.create().parse("spring~");
+queryParser.parse("spring~");
 
 // Specific edit distance
-QueryParser.create().parse("spring~1");    // Maximum 1 character difference
+queryParser.parse("spring~1");    // Maximum 1 character difference
 ```
 
 ### Field Queries
 
 ```java
 // Field-specific search
-QueryParser.create().parse("title:spring");
-QueryParser.create().parse("author:\"John Doe\"");  // Field phrases work correctly
-QueryParser.create().parse("date:2024 AND status:published");
+queryParser.parse("title:spring");
+queryParser.parse("author:\"John Doe\"");  // Field phrases work correctly
+queryParser.parse("date:2024 AND status:published");
 ```
 
 ### Range Queries
 
 ```java
 // Inclusive ranges
-QueryParser.create().parse("[1 TO 10]");          // 1 <= x <= 10
+queryParser.parse("[1 TO 10]");          // 1 <= x <= 10
 
 // Exclusive ranges
-QueryParser.create().parse("{1 TO 10}");          // 1 < x < 10
+queryParser.parse("{1 TO 10}");          // 1 < x < 10
 
 // Mixed ranges
-QueryParser.create().parse("[1 TO 10}");          // 1 <= x < 10
+queryParser.parse("[1 TO 10}");          // 1 <= x < 10
 
 // Note: Field-specific ranges like "price:[100 TO 500]" are not supported
 // Use separate field queries instead
@@ -169,12 +181,12 @@ QueryParser.create().parse("[1 TO 10}");          // 1 <= x < 10
 
 ```java
 // Simple exclusions using - prefix
-QueryParser.create().parse("java -android");                    // Java but not Android
-QueryParser.create().parse("spring -legacy -deprecated");       // Spring but not legacy and not deprecated
+queryParser.parse("java -android");                    // Java but not Android
+queryParser.parse("spring -legacy -deprecated");       // Spring but not legacy and not deprecated
 
 // For complex exclusions, prefer NOT operator
-QueryParser.create().parse("java NOT (android OR mobile)");     // Java but not (android OR mobile)
-QueryParser.create().parse("spring NOT \"legacy code\"");       // Spring but not the phrase "legacy code"
+queryParser.parse("java NOT (android OR mobile)");     // Java but not (android OR mobile)
+queryParser.parse("spring NOT \"legacy code\"");       // Spring but not the phrase "legacy code"
 
 // These are different:
 // "java NOT (android OR ios)" - excludes documents containing EITHER android OR ios  
