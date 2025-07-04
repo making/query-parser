@@ -24,14 +24,6 @@ jobs:
       contents: read
     steps:
     - uses: actions/checkout@v4
-    - name: Set up JDK 17
-      uses: actions/setup-java@v4
-      with:
-        java-version: '17'
-        distribution: 'liberica'
-        cache: maven
-    - name: Unit Tests
-      run: ./mvnw -V --no-transfer-progress clean test
     - name: Import Secrets
       if: github.ref == 'refs/heads/develop' || github.ref == 'refs/heads/main'
       id: secrets
@@ -45,7 +37,17 @@ jobs:
           kv/data/cicd/maven_central username | MAVEN_CENTRAL_USERNAME ;
           kv/data/cicd/maven_central password | MAVEN_CENTRAL_PASSWORD ;
           kv/data/cicd/gpg secring | GPG_SECRING ;
-          kv/data/cicd/gpg passphrase | GPG_PASSPHRASE ;      
+          kv/data/cicd/gpg passphrase | GPG_PASSPHRASE ;
+    - name: Set up JDK 17
+      uses: actions/setup-java@v4
+      with:
+        java-version: '17'
+        distribution: 'liberica'
+        cache: maven
+        gpg-private-key: ${{ steps.secrets.outputs.GPG_SECRING }}
+        gpg-passphrase: ${{ steps.secrets.outputs.GPG_PASSPHRASE }}
+    - name: Unit Tests
+      run: ./mvnw -V --no-transfer-progress clean test
     - name: Generates Maven Settings
       uses: s4u/maven-settings-action@v3.1.0
       with:
@@ -55,25 +57,7 @@ jobs:
               "username": "${{ steps.secrets.outputs.MAVEN_CENTRAL_USERNAME }}",
               "password": "${{ steps.secrets.outputs.MAVEN_CENTRAL_PASSWORD }}"
           }]
-    - name: Deploy to sonatype-snapshots
-      if: github.ref == 'refs/heads/develop'
-      run: |
-        set -e
-        CURRENT_VERSION=$(grep '<version>' pom.xml | head -n 1 | sed -e 's|<version>||g' -e 's|</version>||g' -e 's| ||g' |  tr -d '\t')
-        if [ "${CURRENT_VERSION}" = "$(echo ${CURRENT_VERSION} | grep "\-SNAPSHOT")" ];then
-          ./mvnw -V deploy --no-transfer-progress -DskipTests=true
-        fi
-    - name: Set up JDK 17 with GPG
-      if: github.ref == 'refs/heads/main'
-      uses: actions/setup-java@v4
-      with:
-        java-version: '17'
-        distribution: 'liberica'
-        cache: maven
-        gpg-private-key: ${{ steps.secrets.outputs.GPG_SECRING }}
-        gpg-passphrase: ${{ steps.secrets.outputs.GPG_PASSPHRASE }}
-    - name: Deploy to sonatype-releases
-      if: github.ref == 'refs/heads/main'
+    - name: Deploy to Maven Central
       run: |
         set -e
         mvn -V \
