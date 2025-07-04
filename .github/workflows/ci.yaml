@@ -58,6 +58,7 @@ jobs:
               "password": "${{ steps.secrets.outputs.MAVEN_CENTRAL_PASSWORD }}"
           }]
     - name: Deploy to Maven Central
+      if: github.ref == 'refs/heads/main' || github.ref == 'refs/heads/develop'
       run: |
         set -e
         mvn -V \
