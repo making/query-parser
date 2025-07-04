@@ -24,7 +24,7 @@ Add the following dependency to your `pom.xml`:
 <dependency>
     <groupId>am.ik.query</groupId>
     <artifactId>query-parser</artifactId>
-    <version>0.2.0-SNAPSHOT</version>
+    <version>0.2.0</version>
 </dependency>
 ```
 
