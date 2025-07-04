@@ -25,7 +25,6 @@ jobs:
     steps:
     - uses: actions/checkout@v4
     - name: Import Secrets
-      if: github.ref == 'refs/heads/develop' || github.ref == 'refs/heads/main'
       id: secrets
       uses: hashicorp/vault-action@v3.4.0
       with:
@@ -49,6 +48,7 @@ jobs:
     - name: Unit Tests
       run: ./mvnw -V --no-transfer-progress clean test
     - name: Generates Maven Settings
+      if: github.ref == 'refs/heads/develop' || github.ref == 'refs/heads/main'
       uses: s4u/maven-settings-action@v3.1.0
       with:
         servers: |
