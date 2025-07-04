@@ -25,6 +25,7 @@ jobs:
     steps:
     - uses: actions/checkout@v4
     - name: Import Secrets
+      if: github.event_name != 'pull_request'
       id: secrets
       uses: hashicorp/vault-action@v3.4.0
       with:
@@ -38,6 +39,7 @@ jobs:
           kv/data/cicd/gpg secring | GPG_SECRING ;
           kv/data/cicd/gpg passphrase | GPG_PASSPHRASE ;
     - name: Set up JDK 17
+      if: github.event_name != 'pull_request'
       uses: actions/setup-java@v4
       with:
         java-version: '17'
@@ -45,10 +47,17 @@ jobs:
         cache: maven
         gpg-private-key: ${{ steps.secrets.outputs.GPG_SECRING }}
         gpg-passphrase: ${{ steps.secrets.outputs.GPG_PASSPHRASE }}
+    - name: Set up JDK 17 (PR)
+      if: github.event_name == 'pull_request'
+      uses: actions/setup-java@v4
+      with:
+        java-version: '17'
+        distribution: 'liberica'
+        cache: maven
     - name: Unit Tests
       run: ./mvnw -V --no-transfer-progress clean test
     - name: Generates Maven Settings
-      if: github.ref == 'refs/heads/develop' || github.ref == 'refs/heads/main'
+      if: github.event_name != 'pull_request'
       uses: s4u/maven-settings-action@v3.1.0
       with:
         servers: |
@@ -58,7 +67,7 @@ jobs:
               "password": "${{ steps.secrets.outputs.MAVEN_CENTRAL_PASSWORD }}"
           }]
     - name: Deploy to Maven Central
-      if: github.ref == 'refs/heads/main' || github.ref == 'refs/heads/develop'
+      if: github.event_name != 'pull_request'
       run: |
         set -e
         mvn -V \
@@ -71,6 +80,6 @@ jobs:
             -Dgpg.passphrase=${GPG_PASSPHRASE} \
             -DskipTests=true
     - name: Revoke token
-      if: always()
+      if: always() && github.event_name != 'pull_request'
       run: |
         curl -X POST -s -H "X-Vault-Token: ${VAULT_TOKEN}" ${{ secrets.VAULT_ADDR }}/v1/auth/token/revoke-self || true
